@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { savePortfolio } from "../api"; // ← ye add karo
+
 const SECTIONS = [
   "Hero",
   "Skills",
@@ -222,7 +224,7 @@ function Toast({ msg, onClose }) {
 }
 
 function HeroSection({ data, onChange }) {
-  const [rolesStr, setRolesStr] = useState(data.roles.join(", "));
+  const [rolesStr, setRolesStr] = useState(data?.roles?.join(", "));
 
   const handleRoles = (v) => {
     setRolesStr(v);
@@ -302,7 +304,7 @@ function HeroSection({ data, onChange }) {
 
           <input
             style={inputStyle}
-            value={data.greeting}
+            value={data?.greeting}
             placeholder="Hello, I am"
             onChange={(e) =>
               onChange({
@@ -318,7 +320,7 @@ function HeroSection({ data, onChange }) {
 
           <input
             style={inputStyle}
-            value={data.name}
+            value={data?.name}
             placeholder="Tushar Barik"
             onChange={(e) =>
               onChange({
@@ -349,7 +351,7 @@ function HeroSection({ data, onChange }) {
             gap: 10,
           }}
         >
-          {data.roles.map((r, i) => (
+          {data?.roles?.map((r, i) => (
             <div
               key={i}
               style={{
@@ -381,7 +383,7 @@ function HeroSection({ data, onChange }) {
             resize: "vertical",
             lineHeight: 1.7,
           }}
-          value={data.bio}
+          value={data?.bio}
           placeholder="Write something amazing about yourself..."
           onChange={(e) =>
             onChange({
@@ -398,7 +400,7 @@ function HeroSection({ data, onChange }) {
 
         <input
           style={inputStyle}
-          value={data.resumeUrl}
+          value={data?.resumeUrl}
           placeholder="https://drive.google.com/..."
           onChange={(e) =>
             onChange({
@@ -413,7 +415,7 @@ function HeroSection({ data, onChange }) {
           style={{
             marginTop: 18,
             background: "rgba(255,255,255,0.04)",
-            border,
+            border: "1px solid rgba(130,69,236,0.15)",
             borderRadius: 18,
             padding: 18,
             display: "flex",
@@ -445,7 +447,7 @@ function HeroSection({ data, onChange }) {
           </div>
 
           <a
-            href={data.resumeUrl}
+            href={data?.resumeUrl}
             target="_blank"
             rel="noreferrer"
             style={{
@@ -462,8 +464,9 @@ function HeroSection({ data, onChange }) {
 
 function SkillsSection({ data, onChange }) {
   const [newSkill, setNewSkill] = useState({});
+  const [skillLogo, setSkillLogo] = useState({});
   const [openSections, setOpenSections] = useState(
-    data.reduce((acc, cat) => {
+    data?.reduce((acc, cat) => {
       acc[cat.id] = true;
       return acc;
     }, {}),
@@ -476,6 +479,7 @@ function SkillsSection({ data, onChange }) {
     }));
   };
 
+  // ADD SKILL
   const addSkill = (catId) => {
     if (!newSkill[catId]?.trim()) return;
 
@@ -484,7 +488,13 @@ function SkillsSection({ data, onChange }) {
         cat.id === catId
           ? {
               ...cat,
-              skills: [...cat.skills, newSkill[catId].trim()],
+              skills: [
+                ...cat.skills,
+                {
+                  name: newSkill[catId].trim(),
+                  logo: skillLogo[catId] || "",
+                },
+              ],
             }
           : cat,
       ),
@@ -494,11 +504,17 @@ function SkillsSection({ data, onChange }) {
       ...newSkill,
       [catId]: "",
     });
+
+    setSkillLogo({
+      ...skillLogo,
+      [catId]: "",
+    });
   };
 
+  // REMOVE SKILL
   const removeSkill = (catId, idx) => {
     onChange(
-      data.map((cat) =>
+      data?.map((cat) =>
         cat.id === catId
           ? {
               ...cat,
@@ -509,6 +525,7 @@ function SkillsSection({ data, onChange }) {
     );
   };
 
+  // ADD CATEGORY
   const addCategory = () => {
     const newId = Date.now();
 
@@ -527,13 +544,14 @@ function SkillsSection({ data, onChange }) {
     }));
   };
 
+  // REMOVE CATEGORY
   const removeCategory = (id) => {
     onChange(data.filter((c) => c.id !== id));
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-      {data.map((cat) => (
+      {data?.map((cat) => (
         <div
           key={cat.id}
           style={{
@@ -547,7 +565,7 @@ function SkillsSection({ data, onChange }) {
             transition: "0.3s",
           }}
         >
-          {/* Header */}
+          {/* HEADER */}
           <div
             onClick={() => toggleSection(cat.id)}
             style={{
@@ -609,7 +627,9 @@ function SkillsSection({ data, onChange }) {
                   onChange={(e) =>
                     onChange(
                       data.map((c) =>
-                        c.id === cat.id ? { ...c, title: e.target.value } : c,
+                        c.id === cat.id
+                          ? { ...c, title: e.target.value }
+                          : c,
                       ),
                     )
                   }
@@ -622,7 +642,7 @@ function SkillsSection({ data, onChange }) {
                     marginTop: 3,
                   }}
                 >
-                  {cat.skills.length} Skills Added
+                  {cat?.skills?.length} Skills Added
                 </div>
               </div>
             </div>
@@ -675,7 +695,7 @@ function SkillsSection({ data, onChange }) {
             </div>
           </div>
 
-          {/* Content */}
+          {/* CONTENT */}
           {openSections[cat.id] && (
             <div
               style={{
@@ -683,7 +703,7 @@ function SkillsSection({ data, onChange }) {
                 animation: "fadeIn 0.25s ease",
               }}
             >
-              {/* Skills */}
+              {/* SKILLS */}
               <div
                 style={{
                   display: "flex",
@@ -709,8 +729,26 @@ function SkillsSection({ data, onChange }) {
                       transition: "0.2s",
                     }}
                   >
-                    <span>{sk}</span>
+                    {/* LOGO */}
+                    {sk.logo && (
+                      <img
+                        src={sk.logo}
+                        alt={sk.name}
+                        style={{
+                          width: 22,
+                          height: 22,
+                          objectFit: "contain",
+                          borderRadius: "50%",
+                          background: "#fff",
+                          padding: 2,
+                        }}
+                      />
+                    )}
 
+                    {/* NAME */}
+                    <span>{sk.name}</span>
+
+                    {/* REMOVE */}
                     <span
                       onClick={() => removeSkill(cat.id, i)}
                       style={{
@@ -726,62 +764,147 @@ function SkillsSection({ data, onChange }) {
                 ))}
               </div>
 
-              {/* Add Skill */}
+              {/* ADD SKILL */}
               <div
                 style={{
                   display: "flex",
-                  gap: 12,
-                  flexWrap: "wrap",
+                  flexDirection: "column",
+                  gap: 14,
                 }}
               >
-                <input
+                <div
                   style={{
-                    flex: 1,
-                    minWidth: 220,
-                    padding: "14px 16px",
-                    borderRadius: 14,
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    background: "rgba(255,255,255,0.04)",
-                    color: "#fff",
-                    fontSize: 14,
-                    outline: "none",
-                    backdropFilter: "blur(8px)",
-                  }}
-                  placeholder="Add skill..."
-                  value={newSkill[cat.id] || ""}
-                  onChange={(e) =>
-                    setNewSkill({
-                      ...newSkill,
-                      [cat.id]: e.target.value,
-                    })
-                  }
-                  onKeyDown={(e) => e.key === "Enter" && addSkill(cat.id)}
-                />
-
-                <button
-                  onClick={() => addSkill(cat.id)}
-                  style={{
-                    background: "linear-gradient(135deg,#8245ec,#6366f1)",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 14,
-                    padding: "0 24px",
-                    minHeight: 48,
-                    cursor: "pointer",
-                    fontWeight: 600,
-                    fontSize: 14,
-                    boxShadow: "0 6px 20px rgba(130,69,236,0.35)",
+                    display: "flex",
+                    gap: 12,
+                    flexWrap: "wrap",
                   }}
                 >
-                  + Add Skill
-                </button>
+                  {/* SKILL NAME */}
+                  <input
+                    style={{
+                      flex: 1,
+                      minWidth: 220,
+                      padding: "14px 16px",
+                      borderRadius: 14,
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      background: "rgba(255,255,255,0.04)",
+                      color: "#fff",
+                      fontSize: 14,
+                      outline: "none",
+                      backdropFilter: "blur(8px)",
+                    }}
+                    placeholder="Add skill..."
+                    value={newSkill[cat.id] || ""}
+                    onChange={(e) =>
+                      setNewSkill({
+                        ...newSkill,
+                        [cat.id]: e.target.value,
+                      })
+                    }
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && addSkill(cat.id)
+                    }
+                  />
+
+                  {/* ADD BUTTON */}
+                  <button
+                    onClick={() => addSkill(cat.id)}
+                    style={{
+                      background:
+                        "linear-gradient(135deg,#8245ec,#6366f1)",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 14,
+                      padding: "0 24px",
+                      minHeight: 48,
+                      cursor: "pointer",
+                      fontWeight: 600,
+                      fontSize: 14,
+                      boxShadow: "0 6px 20px rgba(130,69,236,0.35)",
+                    }}
+                  >
+                    + Add Skill
+                  </button>
+                </div>
+
+                {/* FILE UPLOAD */}
+                <div>
+                  <label
+                    style={{
+                      display: "block",
+                      color: "rgba(255,255,255,0.7)",
+                      marginBottom: 8,
+                      fontSize: 13,
+                    }}
+                  >
+                    Upload Skill Logo
+                  </label>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+
+                      if (file) {
+                        const reader = new FileReader();
+
+                        reader.onloadend = () => {
+                          setSkillLogo({
+                            ...skillLogo,
+                            [cat.id]: reader.result,
+                          });
+                        };
+
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    style={{
+                      color: "#fff",
+                      fontSize: 13,
+                    }}
+                  />
+                </div>
+
+                {/* PREVIEW */}
+                {skillLogo[cat.id] && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                    }}
+                  >
+                    <img
+                      src={skillLogo[cat.id]}
+                      alt="preview"
+                      style={{
+                        width: 50,
+                        height: 50,
+                        objectFit: "contain",
+                        borderRadius: 12,
+                        background: "#fff",
+                        padding: 6,
+                      }}
+                    />
+
+                    <span
+                      style={{
+                        color: "rgba(255,255,255,0.7)",
+                        fontSize: 13,
+                      }}
+                    >
+                      Logo Preview
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}
         </div>
       ))}
 
-      {/* Add Category */}
+      {/* ADD CATEGORY */}
       <button
         onClick={addCategory}
         style={{
@@ -849,7 +972,7 @@ function ExperienceSection({ data, onChange }) {
 
   return (
     <div className="space-y-6">
-      {data.map((exp) => (
+      {data?.map((exp) => (
         <div
           key={exp.id}
           className="relative overflow-hidden rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 backdrop-blur-xl p-6 shadow-[0_0_40px_rgba(130,69,236,0.15)]"
@@ -1039,7 +1162,7 @@ function ProjectsSection({ data, onChange }) {
 
   return (
     <div className="space-y-6">
-      {data.map((proj) => (
+      {data?.map((proj) => (
         <div
           key={proj.id}
           className="rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 p-6 backdrop-blur-xl"
@@ -1194,7 +1317,7 @@ function EducationSection({ data, onChange }) {
 
   return (
     <div className="space-y-6">
-      {data.map((edu) => (
+      {data?.map((edu) => (
         <div
           key={edu.id}
           className="rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 p-6 backdrop-blur-xl"
@@ -1297,7 +1420,7 @@ function ContactSection({ data, onChange }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {fields.map((f) => (
+      {fields?.map((f) => (
         <div
           key={f.key}
           className="rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 p-5 backdrop-blur-xl"
@@ -1307,7 +1430,7 @@ function ContactSection({ data, onChange }) {
           </label>
 
           <input
-            value={data[f.key] || ""}
+            value={data?.[f.key] || ""}
             placeholder={f.placeholder}
             onChange={(e) =>
               onChange({
@@ -1323,9 +1446,9 @@ function ContactSection({ data, onChange }) {
   );
 }
 
-export default function PortfolioAdmin() {
+export default function PortfolioAdmin({ initialData: dbData }) {
   const [active, setActive] = useState("Hero");
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState(dbData || initialData);
   const [toast, setToast] = useState(null);
   const [exported, setExported] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -1335,9 +1458,15 @@ export default function PortfolioAdmin() {
     setTimeout(() => setToast(null), 2800);
   };
 
-  const handleSave = () => {
-    localStorage.setItem("portfolioData", JSON.stringify(data));
-    showToast("Changes saved successfully!");
+  // BAAD MEIN (ye karo):
+  const handleSave = async () => {
+    try {
+      await savePortfolio(data);
+      showToast("✓ Changes saved to database!");
+    } catch (err) {
+      console.error("Save failed:", err);
+      showToast("❌ Save failed! Check console.");
+    }
   };
 
   const handleExport = () => {
@@ -1374,23 +1503,23 @@ export default function PortfolioAdmin() {
   const completionStats = [
     {
       label: "Roles",
-      val: data.hero.roles.length,
+      val: data.hero?.roles?.length,
     },
     {
       label: "Skills",
-      val: data.skills.length,
+      val: data?.skills?.length,
     },
     {
       label: "Experience",
-      val: data.experience.length,
+      val: data?.experience?.length,
     },
     {
       label: "Projects",
-      val: data.projects.length,
+      val: data?.projects?.length,
     },
     {
       label: "Education",
-      val: data.education.length,
+      val: data?.education?.length,
     },
   ];
 
@@ -1527,7 +1656,7 @@ export default function PortfolioAdmin() {
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
-            {completionStats.map((s) => (
+            {completionStats?.map((s) => (
               <div
                 key={s.label}
                 className="
@@ -1574,7 +1703,7 @@ export default function PortfolioAdmin() {
             {/* Sections */}
             {active === "Hero" && (
               <HeroSection
-                data={data.hero}
+                data={data?.hero}
                 onChange={(v) =>
                   setData({
                     ...data,
@@ -1586,7 +1715,7 @@ export default function PortfolioAdmin() {
 
             {active === "Skills" && (
               <SkillsSection
-                data={data.skills}
+                data={data?.skills}
                 onChange={(v) =>
                   setData({
                     ...data,
@@ -1598,7 +1727,7 @@ export default function PortfolioAdmin() {
 
             {active === "Experience" && (
               <ExperienceSection
-                data={data.experience}
+                data={data?.experience}
                 onChange={(v) =>
                   setData({
                     ...data,
@@ -1610,7 +1739,7 @@ export default function PortfolioAdmin() {
 
             {active === "Projects" && (
               <ProjectsSection
-                data={data.projects}
+                data={data?.projects}
                 onChange={(v) =>
                   setData({
                     ...data,
@@ -1622,7 +1751,7 @@ export default function PortfolioAdmin() {
 
             {active === "Education" && (
               <EducationSection
-                data={data.education}
+                data={data?.education}
                 onChange={(v) =>
                   setData({
                     ...data,
@@ -1634,7 +1763,7 @@ export default function PortfolioAdmin() {
 
             {active === "Contact" && (
               <ContactSection
-                data={data.contact}
+                data={data?.contact}
                 onChange={(v) =>
                   setData({
                     ...data,

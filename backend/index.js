@@ -17,7 +17,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 
 const PORT = process.env.PORT || 5000;
-console.log(await  bcrypt.hash("admin@6078",10));
 
 
 app.listen(PORT, async() => {
