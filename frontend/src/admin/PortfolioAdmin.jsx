@@ -627,9 +627,7 @@ function SkillsSection({ data, onChange }) {
                   onChange={(e) =>
                     onChange(
                       data.map((c) =>
-                        c.id === cat.id
-                          ? { ...c, title: e.target.value }
-                          : c,
+                        c.id === cat.id ? { ...c, title: e.target.value } : c,
                       ),
                     )
                   }
@@ -801,17 +799,14 @@ function SkillsSection({ data, onChange }) {
                         [cat.id]: e.target.value,
                       })
                     }
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && addSkill(cat.id)
-                    }
+                    onKeyDown={(e) => e.key === "Enter" && addSkill(cat.id)}
                   />
 
                   {/* ADD BUTTON */}
                   <button
                     onClick={() => addSkill(cat.id)}
                     style={{
-                      background:
-                        "linear-gradient(135deg,#8245ec,#6366f1)",
+                      background: "linear-gradient(135deg,#8245ec,#6366f1)",
                       color: "#fff",
                       border: "none",
                       borderRadius: 14,
