@@ -14,20 +14,27 @@ router.get("/", async (req, res) => {
 
 // PUT /api/portfolio
 router.put("/", auth, async (req, res) => {
-  let data = await Portfolio.findOne();
+  try {
+    const updated = await Portfolio.findOneAndUpdate(
+      {},
+      req.body,
+      {
+        new: true,
+        upsert: true,
+      }
+    );
 
-  if (!data) {
-    data = new Portfolio(req.body);
-  } else {
-    Object.assign(data, req.body);
+    res.json({
+      message: "Saved!",
+      data: updated,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Failed to save",
+    });
   }
-
-  await data.save();
-
-  res.json({
-    message: "Saved!",
-    data,
-  });
 });
 
 // POST /api/portfolio/upload

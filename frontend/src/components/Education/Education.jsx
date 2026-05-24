@@ -86,12 +86,9 @@ import React from "react";
 
 // export default Education;
 
-
-
 // src/components/Education/Education.jsx
 import { usePortfolio } from "../../hooks/usePortfolio.jsx";
 import { education, experiences } from "../../constants";
-
 
 const Education = () => {
   const { portfolio, loading } = usePortfolio();
@@ -105,7 +102,10 @@ const Education = () => {
         </div>
         <div className="space-y-8">
           {[1, 2].map((i) => (
-            <div key={i} className="animate-pulse bg-gray-900 rounded-2xl p-8 border border-white ml-8 sm:ml-44 max-w-sm">
+            <div
+              key={i}
+              className="animate-pulse bg-gray-900 rounded-2xl p-8 border border-white ml-8 sm:ml-44 max-w-sm"
+            >
               <div className="flex gap-4 mb-4">
                 <div className="w-24 h-16 bg-gray-700 rounded-md"></div>
                 <div className="space-y-2 flex-1">
@@ -130,20 +130,34 @@ const Education = () => {
       id="education"
       className="py-24 pb-24 px-[7vw] md:px-[7vw] lg:px-[10vw] font-sans bg-skills-gradient clip-path-custom-3"
     >
-      {/* Section Title */}
-      <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold text-white">EDUCATION</h2>
-        <div className="w-42 h-1 bg-purple-500 mx-auto mt-4"></div>
-        <p className="text-gray-400 mt-4 text-lg font-semibold">
-          My education has been a journey of learning and development. Here are
-          the details of my academic background
+      <div className="absolute top-0 left-0 w-72 h-72 bg-purple-600/10 blur-[120px] rounded-full"></div>
+
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-pink-500/10 blur-[120px] rounded-full"></div>
+
+      {/* TITLE */}
+      <div className="relative z-10 text-center mb-8 md:mb-15">
+        <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-purple-500/20 bg-purple-500/10 text-purple-300 text-sm mb-6 backdrop-blur-xl">
+          🎓 Journey of Learning 
+        </div>
+
+        <h2 className="text-3xl md:text-4xl font-black text-white">
+          Qualifications
+        </h2>
+
+        <div className="w-32 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mt-5 rounded-full"></div>
+
+        <p className="text-gray-400 mt-6 text-sm sm:text-lg max-w-3xl mx-auto leading-relaxed">
+          My education journey and academic
+          achievements that shaped my
+          technical and problem-solving
+          skills.
         </p>
       </div>
 
       {/* Education Timeline */}
       <div className="relative">
         {/* Vertical line */}
-        <div className="absolute sm:left-1/2 left-0 transform -translate-x-1/2 sm:translate-x-0 w-1 bg-white h-full"></div>
+        <div className="absolute sm:left-1/2 left-0 transform -translate-x-1/2 sm:translate-x-0 w-1 bg-gradient-to-b from-purple-500 to-pink-500 h-full"></div>
 
         {education1.map((edu, index) => (
           <div
@@ -154,7 +168,7 @@ const Education = () => {
           >
             {/* Timeline Circle — schoolLogo Cloudinary URL hoga */}
             <div className="absolute sm:left-1/2 left-0 transform -translate-x-1/2 bg-gray-400 border-4 border-[#8245ec] w-12 h-12 sm:w-16 sm:h-16 rounded-full flex justify-center items-center z-10 sm:z-0 overflow-hidden">
-              {edu.schoolLogo ? (
+              {edu.schoolLogo || edu.img ? (
                 <img
                   src={edu.img}
                   alt={edu.school}
@@ -168,15 +182,16 @@ const Education = () => {
             </div>
 
             {/* Content Card */}
-            <div
-              className={`w-full md:w-[80%] lg:max-w-[32%] p-4 sm:p-8 rounded-2xl border border-white bg-gray-900 backdrop-blur-md shadow-[0_0_20px_1px_rgba(130,69,236,0.3)] ${
-                index % 2 === 0 ? "sm:ml-0" : "sm:mr-0"
-              } sm:ml-44 sm:mr-44 ml-8 transform transition-transform duration-300 hover:scale-105`}
-            >
+           
+              <div
+                className={`group relative w-full md:w-[46%] rounded-[32px] border border-white/10 bg-[#120d25]/80 backdrop-blur-2xl p-7 sm:p-8 transition-all duration-500 hover:-translate-y-2 hover:border-purple-500/30 hover:shadow-[0_0_50px_rgba(168,85,247,0.15)] ${
+                  index % 2 === 0 ? "md:mr-auto" : "md:ml-auto"
+                } ml-8 md:ml-0`}
+              >
               <div className="flex items-center space-x-4">
                 {/* School Logo */}
-                <div className="w-30 h-16 bg-white rounded-md overflow-hidden flex-shrink-0">
-                  {edu.schoolLogo ? (
+                <div className="w-16 h-16 bg-white rounded-md overflow-hidden shrink-0">
+                  {edu.schoolLogo || edu.img ? (
                     <img
                       src={edu.img}
                       alt={edu.school}
@@ -194,10 +209,12 @@ const Education = () => {
                 {/* School, Degree, Date */}
                 <div className="flex flex-col justify-between">
                   <div>
-                    <h3 className="text-xl sm:text-2xl font-semibold text-white">
+                    <h3 className="text-lg sm:text-2xl font-semibold text-white">
                       {edu.degree}
                     </h3>
-                    <h4 className="text-md sm:text-sm text-gray-300">{edu.school}</h4>
+                    <h4 className="text-sm sm:text-base text-gray-300">
+                      {edu.school}
+                    </h4>
                   </div>
                   <p className="text-sm text-gray-500 mt-2">{edu.date}</p>
                 </div>
@@ -205,7 +222,9 @@ const Education = () => {
 
               {/* Grade and Description */}
               <p className="mt-4 text-white font-bold">Grade: {edu.grade}</p>
-              <p className="mt-4 text-gray-400 text-[15px] sm:text-[16px]">{edu.desc}</p>
+              <p className="mt-4 text-gray-400 text-[15px] sm:text-[16px]">
+                {edu.desc}
+              </p>
             </div>
           </div>
         ))}

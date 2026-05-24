@@ -290,7 +290,7 @@ export const education = [
     degree: "Bachelor in Technology - B.Tech (Computer Science)",
   },
   {
-    id: 2,
+    id: 1,
     img: ravlogo,
     school: "Ravenshaw Higher Secondry School, Cuttack",
     date: "May 2020 - March 2022",
@@ -299,7 +299,7 @@ export const education = [
     degree: "CHSE(XII) - PCM with Computer Science",
   },
   {
-    id: 3,
+    id: 2,
     img: ravlogo,
     school: "Ravenshaw Collegiate School, Cuttack",
     date: "Apr 2013 - March 2020",

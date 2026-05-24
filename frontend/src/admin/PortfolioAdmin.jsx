@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { savePortfolio } from "../api"; // ← ye add karo
+import { savePortfolio, uploadImage } from "../api"; // ← ye add karo
 
 const SECTIONS = [
   "Hero",
@@ -921,18 +921,227 @@ function SkillsSection({ data, onChange }) {
   );
 }
 
+// function ExperienceSection({ data, onChange }) {
+//   const [newSkill, setNewSkill] = useState({});
+
+//   const update = (id, field, val) =>
+//     onChange(data.map((e) => (e.id === id ? { ...e, [field]: val } : e)));
+
+//   const addSkill = (id) => {
+//     const s = (newSkill[id] || "")
+//       .trim()
+//       .split(",")
+//       .map((s) => s.trim());
+//     if (!s) return;
+//     onChange(
+//       data.map((e) =>
+//         e.id === id ? { ...e, skills: [...e.skills, ...s] } : e,
+//       ),
+//     );
+
+//     setNewSkill({ ...newSkill, [id]: "" });
+//   };
+
+//   const removeSkill = (id, idx) =>
+//     onChange(
+//       data.map((e) =>
+//         e.id === id
+//           ? {
+//               ...e,
+//               skills: e.skills.filter((_, i) => i !== idx),
+//             }
+//           : e,
+//       ),
+//     );
+
+//   const addExp = () =>
+//     onChange([
+//       ...data,
+//       {
+//         id: Date.now(),
+//         role: "",
+//         company: "",
+//         date: "",
+//         desc: "",
+//         skills: [],
+//       },
+//     ]);
+
+//   const removeExp = (id) => onChange(data.filter((e) => e.id !== id));
+
+//   return (
+//     <div className="space-y-6">
+//       {data?.map((exp) => (
+//         <div
+//           key={exp.id}
+//           className="relative overflow-hidden rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 backdrop-blur-xl p-6 shadow-[0_0_40px_rgba(130,69,236,0.15)]"
+//         >
+//           {/* Glow */}
+//           <div className="absolute top-0 right-0 h-32 w-32 bg-purple-500/10 blur-3xl rounded-full"></div>
+
+//           {/* Header */}
+//           <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+//             <div>
+//               <h3 className="text-xl font-bold text-white">
+//                 {exp.role || "New Experience"}
+//               </h3>
+//               <p className="text-sm text-purple-300">
+//                 {exp.company || "Company Name"}
+//               </p>
+//             </div>
+
+//             <button
+//               onClick={() => removeExp(exp.id)}
+//               className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition"
+//             >
+//               Remove
+//             </button>
+//           </div>
+
+//           {/* Inputs */}
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+//             <div>
+//               <label className="text-sm text-gray-300 mb-2 block">
+//                 Role / Position
+//               </label>
+
+//               <input
+//                 value={exp.role}
+//                 onChange={(e) => update(exp.id, "role", e.target.value)}
+//                 placeholder="Frontend Developer"
+//                 className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+//               />
+//             </div>
+
+//             <div>
+//               <label className="text-sm text-gray-300 mb-2 block">
+//                 Company
+//               </label>
+
+//               <input
+//                 value={exp.company}
+//                 onChange={(e) => update(exp.id, "company", e.target.value)}
+//                 placeholder="Google"
+//                 className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+//               />
+//             </div>
+
+//             <div className="md:col-span-2">
+//               <label className="text-sm text-gray-300 mb-2 block">
+//                 Date Range
+//               </label>
+
+//               <input
+//                 value={exp.date}
+//                 placeholder="June 2025 - July 2025"
+//                 onChange={(e) => update(exp.id, "date", e.target.value)}
+//                 className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+//               />
+//             </div>
+//           </div>
+
+//           {/* Description */}
+//           <div className="mt-5">
+//             <label className="text-sm text-gray-300 mb-2 block">
+//               Description
+//             </label>
+
+//             <textarea
+//               value={exp.desc}
+//               onChange={(e) => update(exp.id, "desc", e.target.value)}
+//               placeholder="Describe your work..."
+//               rows={5}
+//               className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none resize-none focus:border-purple-500 transition"
+//             />
+//           </div>
+
+//           {/* Skills */}
+//           <div className="mt-5">
+//             <label className="text-sm text-gray-300 mb-3 block">
+//               Skills Used
+//             </label>
+
+//             <div className="flex flex-wrap gap-3 mb-4">
+//               {exp.skills.map((sk, i) => (
+//                 <div
+//                   key={i}
+//                   className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm text-purple-200"
+//                 >
+//                   {sk}
+
+//                   <button
+//                     onClick={() => removeSkill(exp.id, i)}
+//                     className="text-red-400 hover:text-red-300"
+//                   >
+//                     ✕
+//                   </button>
+//                 </div>
+//               ))}
+//             </div>
+
+//             <div className="flex flex-col sm:flex-row gap-3">
+//               <input
+//                 value={newSkill[exp.id] || ""}
+//                 placeholder="Add skill..."
+//                 onChange={(e) =>
+//                   setNewSkill({
+//                     ...newSkill,
+//                     [exp.id]: e.target.value,
+//                   })
+//                 }
+//                 onKeyDown={(e) => e.key === "Enter" && addSkill(exp.id)}
+//                 className="flex-1 rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+//               />
+
+//               <button
+//                 onClick={() => addSkill(exp.id)}
+//                 className="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-3 font-semibold text-white hover:scale-[1.02] transition"
+//               >
+//                 + Add Skill
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       ))}
+
+//       {/* Add Experience */}
+//       <button
+//         onClick={addExp}
+//         className="w-full rounded-3xl border border-dashed border-purple-500/40 bg-purple-500/5 py-4 text-purple-300 hover:bg-purple-500/10 transition"
+//       >
+//         + Add Experience
+//       </button>
+//     </div>
+//   );
+// }
+
 function ExperienceSection({ data, onChange }) {
   const [newSkill, setNewSkill] = useState({});
+  const [openCards, setOpenCards] = useState({});
+
+  const toggleCard = (id) => {
+    setOpenCards((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   const update = (id, field, val) =>
     onChange(data.map((e) => (e.id === id ? { ...e, [field]: val } : e)));
 
   const addSkill = (id) => {
-    const s = (newSkill[id] || "").trim();
-    if (!s) return;
+    const s = (newSkill[id] || "")
+      .trim()
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    if (!s.length) return;
 
     onChange(
-      data.map((e) => (e.id === id ? { ...e, skills: [...e.skills, s] } : e)),
+      data.map((e) =>
+        e.id === id ? { ...e, skills: [...e.skills, ...s] } : e,
+      ),
     );
 
     setNewSkill({ ...newSkill, [id]: "" });
@@ -957,148 +1166,215 @@ function ExperienceSection({ data, onChange }) {
         id: Date.now(),
         role: "",
         company: "",
+        companyLogo: "", // new field
         date: "",
         desc: "",
         skills: [],
       },
     ]);
 
+  const handleLogoUpload = async (e, expId) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      const res = await uploadImage(file);
+
+      update(expId, "companyLogo", res.data.url);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const removeExp = (id) => onChange(data.filter((e) => e.id !== id));
 
   return (
     <div className="space-y-6">
-      {data?.map((exp) => (
-        <div
-          key={exp.id}
-          className="relative overflow-hidden rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 backdrop-blur-xl p-6 shadow-[0_0_40px_rgba(130,69,236,0.15)]"
-        >
-          {/* Glow */}
-          <div className="absolute top-0 right-0 h-32 w-32 bg-purple-500/10 blur-3xl rounded-full"></div>
+      {data?.map((exp) => {
+        const isOpen = openCards[exp.id] ?? true;
 
-          {/* Header */}
-          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-            <div>
-              <h3 className="text-xl font-bold text-white">
-                {exp.role || "New Experience"}
-              </h3>
-              <p className="text-sm text-purple-300">
-                {exp.company || "Company Name"}
-              </p>
-            </div>
+        return (
+          <div
+            key={exp.id}
+            className="relative overflow-hidden rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 backdrop-blur-xl p-6 shadow-[0_0_40px_rgba(130,69,236,0.15)]"
+          >
+            {/* Glow */}
+            <div className="absolute top-0 right-0 h-32 w-32 bg-purple-500/10 blur-3xl rounded-full"></div>
 
-            <button
-              onClick={() => removeExp(exp.id)}
-              className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition"
-            >
-              Remove
-            </button>
-          </div>
+            {/* Header */}
+            <div className="relative flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                {/* Company Logo Preview */}
+                {exp.companyLogo ? (
+                  <img
+                    src={exp.companyLogo}
+                    alt="company-logo"
+                    className="w-14 h-14 rounded-2xl object-cover border border-white/10"
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-2xl bg-[#140d2e] border border-white/10 flex items-center justify-center text-gray-400 text-xs">
+                    Logo
+                  </div>
+                )}
 
-          {/* Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className="text-sm text-gray-300 mb-2 block">
-                Role / Position
-              </label>
+                <div>
+                  <h3 className="text-xl font-bold text-white">
+                    {exp.role || "New Experience"}
+                  </h3>
 
-              <input
-                value={exp.role}
-                onChange={(e) => update(exp.id, "role", e.target.value)}
-                placeholder="Frontend Developer"
-                className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-300 mb-2 block">
-                Company
-              </label>
-
-              <input
-                value={exp.company}
-                onChange={(e) => update(exp.id, "company", e.target.value)}
-                placeholder="Google"
-                className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="text-sm text-gray-300 mb-2 block">
-                Date Range
-              </label>
-
-              <input
-                value={exp.date}
-                placeholder="June 2025 - July 2025"
-                onChange={(e) => update(exp.id, "date", e.target.value)}
-                className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
-              />
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="mt-5">
-            <label className="text-sm text-gray-300 mb-2 block">
-              Description
-            </label>
-
-            <textarea
-              value={exp.desc}
-              onChange={(e) => update(exp.id, "desc", e.target.value)}
-              placeholder="Describe your work..."
-              rows={5}
-              className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none resize-none focus:border-purple-500 transition"
-            />
-          </div>
-
-          {/* Skills */}
-          <div className="mt-5">
-            <label className="text-sm text-gray-300 mb-3 block">
-              Skills Used
-            </label>
-
-            <div className="flex flex-wrap gap-3 mb-4">
-              {exp.skills.map((sk, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm text-purple-200"
-                >
-                  {sk}
-
-                  <button
-                    onClick={() => removeSkill(exp.id, i)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    ✕
-                  </button>
+                  <p className="text-sm text-purple-300">
+                    {exp.company || "Company Name"}
+                  </p>
                 </div>
-              ))}
+              </div>
+
+              <div className="flex items-center gap-3">
+                {/* Open / Close Button */}
+                <button
+                  onClick={() => toggleCard(exp.id)}
+                  className="px-4 py-2 rounded-xl border border-purple-500/30 text-purple-300 hover:bg-purple-500/10 transition"
+                >
+                  {isOpen ? "Close" : "Open"}
+                </button>
+
+                {/* Remove Button */}
+                <button
+                  onClick={() => removeExp(exp.id)}
+                  className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                value={newSkill[exp.id] || ""}
-                placeholder="Add skill..."
-                onChange={(e) =>
-                  setNewSkill({
-                    ...newSkill,
-                    [exp.id]: e.target.value,
-                  })
-                }
-                onKeyDown={(e) => e.key === "Enter" && addSkill(exp.id)}
-                className="flex-1 rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
-              />
+            {/* Content */}
+            {isOpen && (
+              <>
+                {/* Inputs */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+                  <div>
+                    <label className="text-sm text-gray-300 mb-2 block">
+                      Role / Position
+                    </label>
 
-              <button
-                onClick={() => addSkill(exp.id)}
-                className="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-3 font-semibold text-white hover:scale-[1.02] transition"
-              >
-                + Add Skill
-              </button>
-            </div>
+                    <input
+                      value={exp.role}
+                      onChange={(e) => update(exp.id, "role", e.target.value)}
+                      placeholder="Frontend Developer"
+                      className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-gray-300 mb-2 block">
+                      Company
+                    </label>
+
+                    <input
+                      value={exp.company}
+                      onChange={(e) =>
+                        update(exp.id, "company", e.target.value)
+                      }
+                      placeholder="Google"
+                      className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+                    />
+                  </div>
+
+                  {/* Company Logo Upload */}
+                  <div className="md:col-span-2">
+                    <label className="text-sm text-gray-300 mb-2 block">
+                      Company Logo
+                    </label>
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleLogoUpload(e, exp.id)}
+                      className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white file:mr-4 file:rounded-xl file:border-0 file:bg-purple-600 file:px-4 file:py-2 file:text-white"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="text-sm text-gray-300 mb-2 block">
+                      Date Range
+                    </label>
+
+                    <input
+                      value={exp.date}
+                      placeholder="June 2025 - July 2025"
+                      onChange={(e) => update(exp.id, "date", e.target.value)}
+                      className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="mt-5">
+                  <label className="text-sm text-gray-300 mb-2 block">
+                    Description
+                  </label>
+
+                  <textarea
+                    value={exp.desc}
+                    onChange={(e) => update(exp.id, "desc", e.target.value)}
+                    placeholder="Describe your work..."
+                    rows={5}
+                    className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none resize-none focus:border-purple-500 transition"
+                  />
+                </div>
+
+                {/* Skills */}
+                <div className="mt-5">
+                  <label className="text-sm text-gray-300 mb-3 block">
+                    Skills Used
+                  </label>
+
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {exp.skills.map((sk, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm text-purple-200"
+                      >
+                        {sk}
+
+                        <button
+                          onClick={() => removeSkill(exp.id, i)}
+                          className="text-red-400 hover:text-red-300"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <input
+                      value={newSkill[exp.id] || ""}
+                      placeholder="Add skill..."
+                      onChange={(e) =>
+                        setNewSkill({
+                          ...newSkill,
+                          [exp.id]: e.target.value,
+                        })
+                      }
+                      onKeyDown={(e) => e.key === "Enter" && addSkill(exp.id)}
+                      className="flex-1 rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+                    />
+
+                    <button
+                      onClick={() => addSkill(exp.id)}
+                      className="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-3 font-semibold text-white hover:scale-[1.02] transition"
+                    >
+                      + Add Skill
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* Add Experience */}
       <button
@@ -1450,7 +1726,7 @@ export default function PortfolioAdmin({ initialData: dbData }) {
 
   const showToast = (msg) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 2800);
+    setTimeout(() => setToast(null), 5000);
   };
 
   // BAAD MEIN (ye karo):
