@@ -7,6 +7,7 @@ import {
 } from "react-icons/fa";
 
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [activeSection, setActiveSection] = useState("about");
@@ -36,31 +37,20 @@ const Navbar = () => {
 
     window.addEventListener("scroll", handleScroll);
 
-    return () =>
-      window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Close mobile menu on outside click
   useEffect(() => {
     const handleOpenBox = (e) => {
-      if (
-        openBox.current &&
-        !openBox.current.contains(e.target)
-      ) {
+      if (openBox.current && !openBox.current.contains(e.target)) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener(
-      "mousedown",
-      handleOpenBox
-    );
+    document.addEventListener("mousedown", handleOpenBox);
 
-    return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleOpenBox
-      );
+    return () => document.removeEventListener("mousedown", handleOpenBox);
   }, []);
 
   // Smooth scroll
@@ -68,8 +58,7 @@ const Navbar = () => {
     setActiveSection(activeId);
     setIsOpen(false);
 
-    const section =
-      document.getElementById(activeId);
+    const section = document.getElementById(activeId);
 
     if (section) {
       section.scrollIntoView({
@@ -94,34 +83,25 @@ const Navbar = () => {
       `}
     >
       <div className="flex items-center justify-between">
-
         {/* LOGO */}
         <div
-          onClick={() =>
-            handleActiveSection("about")
-          }
+          onClick={() => handleActiveSection("about")}
           className="group cursor-pointer"
         >
           <h1 className="text-xl sm:text-2xl font-black tracking-wide">
-            <span className="text-purple-500">
-              &lt;
-            </span>
+            <span className="text-purple-500">&lt;</span>
 
             <span className="text-white group-hover:text-purple-300 transition">
               Tushar
             </span>
 
-            <span className="text-purple-500">
-              /
-            </span>
+            <span className="text-purple-500">/</span>
 
             <span className="text-white group-hover:text-pink-300 transition">
               Barik
             </span>
 
-            <span className="text-purple-500">
-              &gt;
-            </span>
+            <span className="text-purple-500">&gt;</span>
           </h1>
         </div>
 
@@ -131,13 +111,9 @@ const Navbar = () => {
             {menuItems.map((item) => (
               <li key={item.id}>
                 <button
-                  onClick={() =>
-                    handleActiveSection(item.id)
-                  }
+                  onClick={() => handleActiveSection(item.id)}
                   className={`relative text-sm font-medium transition-all duration-300 hover:text-white ${
-                    activeSection === item.id
-                      ? "text-white"
-                      : "text-gray-400"
+                    activeSection === item.id ? "text-white" : "text-gray-400"
                   }`}
                 >
                   {item.label}
@@ -165,7 +141,6 @@ const Navbar = () => {
                 icon: <FaInstagram />,
                 link: "https://instagram.com/",
               },
-              
             ].map((item, index) => (
               <a
                 key={index}
@@ -177,12 +152,12 @@ const Navbar = () => {
                 {item.icon}
               </a>
             ))}
-            <a
-              href="/admin"
+            <Link
+              to="/admin"
               className="w-11 h-11 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl flex items-center justify-center text-gray-300 text-lg hover:text-white hover:border-purple-500/40 hover:bg-purple-500/10 hover:-translate-y-1 transition-all duration-300"
             >
               <FaHeadSideMask />
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -200,9 +175,7 @@ const Navbar = () => {
       {/* MOBILE MENU */}
       <div
         className={`lg:hidden absolute left-1/2 -translate-x-1/2 w-[92%] transition-all duration-500 ${
-          isOpen
-            ? "top-18 opacity-100 visible"
-            : "top-16 opacity-0 invisible"
+          isOpen ? "top-18 opacity-100 visible" : "top-16 opacity-0 invisible"
         }`}
       >
         <div
@@ -216,9 +189,7 @@ const Navbar = () => {
             {menuItems.map((item) => (
               <li key={item.id}>
                 <button
-                  onClick={() =>
-                    handleActiveSection(item.id)
-                  }
+                  onClick={() => handleActiveSection(item.id)}
                   className={`w-full text-left px-5 py-3 rounded-2xl font-medium transition-all duration-300 ${
                     activeSection === item.id
                       ? "bg-gradient-to-r from-purple-600/20 to-pink-500/20 text-white border border-purple-500/20"
@@ -256,12 +227,12 @@ const Navbar = () => {
                   {item.icon}
                 </a>
               ))}
-              <a
-                href="/admin"
-                className="w-12 h-12 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center text-gray-300 text-xl hover:text-white hover:border-purple-500/40 hover:bg-purple-500/10 transition-all duration-300"
+              <Link
+                to="/admin"
+                className="w-11 h-11 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl flex items-center justify-center text-gray-300 text-lg hover:text-white hover:border-purple-500/40 hover:bg-purple-500/10 hover:-translate-y-1 transition-all duration-300"
               >
-                <FaHeadSideMask />  
-              </a>
+                <FaHeadSideMask />
+              </Link>
             </div>
           </ul>
         </div>
@@ -271,9 +242,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
-
 
 // import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 
@@ -389,7 +357,7 @@ export default Navbar;
 
 //       <nav
 //         className={`fixed top-0 left-0 w-full z-[999] transition-all duration-500 overflow-hidden
-        
+
 //         ${showNavbar ? "translate-y-0" : "-translate-y-full"}
 
 //         ${
