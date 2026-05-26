@@ -11,7 +11,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: "https://tusharbarik.vercel.app/"
+  origin: ["https://tusharbarik.vercel.app", "https://www.tusharbarik.vercel.app"]
 }));
 app.use(express.json());
 
