@@ -345,10 +345,7 @@ const Navbar = () => {
                 icon: <FaInstagram />,
                 link: "https://instagram.com/",
               },
-              // {
-              //   icon: <FaHeadSideMask />,
-              //   link: `https://localhost:5173/admin`,
-              // }
+              
             ].map((item, index) => (
               <a
                 key={index}
@@ -360,6 +357,12 @@ const Navbar = () => {
                 {item.icon}
               </a>
             ))}
+            <a
+              href="/admin"
+              className="w-11 h-11 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl flex items-center justify-center text-gray-300 text-lg hover:text-white hover:border-purple-500/40 hover:bg-purple-500/10 hover:-translate-y-1 transition-all duration-300"
+            >
+              <FaHeadSideMask />
+            </a>
           </div>
         </div>
 
@@ -433,6 +436,12 @@ const Navbar = () => {
                   {item.icon}
                 </a>
               ))}
+              <a
+                href="/admin"
+                className="w-12 h-12 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center text-gray-300 text-xl hover:text-white hover:border-purple-500/40 hover:bg-purple-500/10 transition-all duration-300"
+              >
+                <FaHeadSideMask />  
+              </a>
             </div>
           </ul>
         </div>

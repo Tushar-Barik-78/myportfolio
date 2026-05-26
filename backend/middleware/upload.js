@@ -1,26 +1,15 @@
+// backend/middleware/upload.js
+// multer-storage-cloudinary cloudinary v2 ke saath kaam nahi karta
+// Solution: memoryStorage use karo — file RAM mein aati hai
+// phir routes/portfolio.js mein upload_stream se Cloudinary pe bhejo
+
 import multer from "multer";
-import path from "path";
-import fs from "fs";
 
-const uploadPath = "uploads/";
+const storage = multer.memoryStorage(); // disk pe save nahi hoga
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadPath);
-  },
-
-  filename: function (req, file, cb) {
-    const uniqueName =
-      Date.now() + path.extname(file.originalname);
-
-    cb(null, uniqueName);
-  },
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
 });
-
-const upload = multer({ storage });
 
 export default upload;

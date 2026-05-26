@@ -23,6 +23,7 @@ const portfolioSchema = new mongoose.Schema({
       date: String,
       desc: String,
       skills: [String],
+      mode: String,
     },
   ],
   projects: [

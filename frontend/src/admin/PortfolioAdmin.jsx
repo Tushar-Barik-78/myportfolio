@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { savePortfolio, uploadImage } from "../api"; // ← ye add karo
+import { useState, useRef, useEffect } from "react";
+import { savePortfolio, uploadImage } from "../api";
 
 const SECTIONS = [
   "Hero",
@@ -15,220 +15,306 @@ const initialData = {
     name: "Tushar Barik",
     greeting: "Hii, I am",
     roles: ["Fullstack Developer", "App Developer", "Coder", "Problem Solver"],
-    bio: "I am a full-stack developer with over 2 years of experience in building scalable web applications. Skilled in both front-end and back-end development, I specialize in the MERN stack and modern technologies.",
+    bio: "I am a full-stack developer with over 2 years of experience in building scalable web applications.",
     resumeUrl:
       "https://drive.google.com/file/d/1cFqxcrKFJfnJXrJXmE9HnmO18bdVKJl2/view",
+    profileImage: "",
   },
-
   skills: [
     {
       id: 1,
       title: "Frontend",
       skills: [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "React JS",
-        "Redux",
-        "Tailwind CSS",
+        { name: "React JS", logo: "" },
+        { name: "Tailwind CSS", logo: "" },
       ],
     },
     {
       id: 2,
       title: "Backend",
-      skills: ["Node JS", "Express JS", "MongoDB", "MySQL"],
+      skills: [
+        { name: "Node JS", logo: "" },
+        { name: "MongoDB", logo: "" },
+      ],
     },
   ],
-
   experience: [
     {
       id: 1,
       role: "FullStack Developer",
       company: "Internpe",
+      companyLogo: "",
       date: "June 2025 - July 2025",
       desc: "Developed scalable web applications using MERN Stack.",
-      skills: ["HTML", "CSS", "JavaScript", "React JS", "Node JS", "MongoDB"],
+      skills: ["React JS", "Node JS"],
     },
   ],
-
   projects: [
     {
       id: 1,
       title: "JobQuest",
-      description:
-        "A full-stack job portal connecting recruiters and job seekers.",
-      tags: ["React JS", "Node JS", "MongoDB", "Express JS", "Tailwind CSS"],
+      description: "A full-stack job portal.",
+      image: "",
+      tags: ["React JS", "Node JS"],
       github: "https://github.com/Tushar-Barik-78/JobQuest",
       webapp: "https://jobquest-tushar.onrender.com/",
     },
   ],
-
   education: [
     {
       id: 1,
       school: "Ajay Binay Institute of Technology",
+      schoolLogo: "",
       date: "2022 - Present",
       grade: "8.95 CGPA",
       degree: "B.Tech CSE",
       desc: "Pursuing B.Tech in Computer Science.",
     },
   ],
-
-  contact: {
-    email: "tushar@example.com",
-    phone: "+91 9876543210",
-    github: "https://github.com/Tushar-Barik-78",
-    linkedin: "https://linkedin.com/in/tushar-barik",
-    twitter: "",
-  },
+  contact: { email: "", phone: "", github: "", linkedin: "", twitter: "" },
 };
 
 const ICON = {
-  hero: "🏠",
-  skills: "⚡",
-  experience: "💼",
-  projects: "🚀",
-  education: "🎓",
-  contact: "📬",
-  save: "💾",
-  add: "＋",
-  del: "✕",
-  edit: "✏️",
-  check: "✓",
+  Hero: "🏠",
+  Skills: "⚡",
+  Experience: "💼",
+  Projects: "🚀",
+  Education: "🎓",
+  Contact: "📬",
 };
 
-const glass = "rgba(255,255,255,0.05)";
-const border = "1px solid rgba(255,255,255,0.08)";
+// ─── Reusable Image Upload Box ────────────────────────────────────────────
+function ImageUploadBox({
+  label,
+  currentUrl,
+  onUploaded,
+  shape = "square",
+  hint = "",
+}) {
+  const inputRef = useRef();
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState(currentUrl || "");
 
-const inputStyle = {
-  width: "100%",
-  padding: "14px 16px",
-  borderRadius: 14,
-  border,
-  background: glass,
-  color: "#fff",
-  fontSize: 14,
-  outline: "none",
-  boxSizing: "border-box",
-  backdropFilter: "blur(10px)",
-};
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Instant local preview
+    const reader = new FileReader();
+    reader.onloadend = () => setPreview(reader.result);
+    reader.readAsDataURL(file);
+    // Upload to Cloudinary
+    setUploading(true);
+    try {
+      const res = await uploadImage(file);
+      const url = res.data.url;
+      setPreview(url);
+      onUploaded(url);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
-const labelStyle = {
-  fontSize: 12,
-  color: "rgba(255,255,255,0.65)",
-  marginBottom: 8,
-  display: "block",
-  fontWeight: 600,
-  letterSpacing: 0.4,
-};
-
-const cardStyle = {
-  background:
-    "linear-gradient(145deg, rgba(17,17,35,0.9), rgba(10,10,20,0.95))",
-  borderRadius: 24,
-  border: "1px solid rgba(130,69,236,0.15)",
-  padding: "24px",
-  marginBottom: 18,
-  boxShadow: "0 10px 40px rgba(0,0,0,0.35)",
-  backdropFilter: "blur(18px)",
-};
-
-const btnPrimary = {
-  background: "linear-gradient(135deg,#8245ec,#6366f1)",
-  color: "#fff",
-  border: "none",
-  borderRadius: 14,
-  padding: "12px 20px",
-  cursor: "pointer",
-  fontSize: 14,
-  fontWeight: 600,
-  boxShadow: "0 8px 20px rgba(130,69,236,0.35)",
-  transition: "0.3s",
-};
-
-const btnSecondary = {
-  background: "rgba(255,255,255,0.05)",
-  color: "#d1d5db",
-  border,
-  borderRadius: 14,
-  padding: "12px 18px",
-  cursor: "pointer",
-  fontSize: 14,
-  fontWeight: 500,
-  backdropFilter: "blur(10px)",
-};
-
-const btnDanger = {
-  background: "rgba(255,77,79,0.08)",
-  color: "#ff6b6b",
-  border: "1px solid rgba(255,107,107,0.18)",
-  borderRadius: 12,
-  padding: "10px 14px",
-  cursor: "pointer",
-  fontSize: 13,
-  fontWeight: 600,
-};
-
-function Toast({ msg, onClose }) {
-  return (
-    <div
-      style={{
-        position: "fixed",
-        bottom: 24,
-        right: 24,
-        zIndex: 999,
-        background:
-          "linear-gradient(135deg, rgba(130,69,236,0.95), rgba(99,102,241,0.95))",
-        color: "#fff",
-        borderRadius: 18,
-        padding: "14px 20px",
-        fontSize: 14,
-        fontWeight: 600,
-        boxShadow: "0 12px 35px rgba(130,69,236,0.45)",
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        maxWidth: "90%",
-      }}
-    >
-      <div
-        style={{
-          width: 30,
-          height: 30,
+  const previewStyle =
+    shape === "circle"
+      ? {
+          width: 80,
+          height: 80,
           borderRadius: "50%",
-          background: "rgba(255,255,255,0.12)",
+          objectFit: "cover",
+          border: "2px solid rgba(130,69,236,0.4)",
+        }
+      : {
+          width: "100%",
+          maxHeight: 200,
+          borderRadius: 12,
+          objectFit: "cover",
+          border: "1px solid rgba(130,69,236,0.3)",
+        };
+
+  const placeholderStyle =
+    shape === "circle"
+      ? {
+          width: 80,
+          height: 80,
+          borderRadius: "50%",
+          background: "rgba(130,69,236,0.1)",
+          border: "2px dashed rgba(130,69,236,0.35)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-        }}
-      >
-        {ICON.check}
-      </div>
-
-      <span style={{ flex: 1 }}>{msg}</span>
-
-      <span
-        onClick={onClose}
-        style={{
+          flexDirection: "column",
+          gap: 4,
           cursor: "pointer",
-          opacity: 0.7,
-          fontSize: 16,
+          flexShrink: 0,
+        }
+      : {
+          width: "100%",
+          minHeight: 130,
+          borderRadius: 12,
+          background: "rgba(130,69,236,0.06)",
+          border: "2px dashed rgba(130,69,236,0.25)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          gap: 6,
+          cursor: "pointer",
+        };
+
+  return (
+    <div>
+      {label && (
+        <label
+          style={{
+            fontSize: 12,
+            color: "rgba(255,255,255,0.6)",
+            marginBottom: 10,
+            display: "block",
+            fontWeight: 600,
+            letterSpacing: 0.4,
+          }}
+        >
+          {label}
+        </label>
+      )}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          flexWrap: "wrap",
         }}
       >
-        ✕
-      </span>
+        {/* Preview or placeholder */}
+        {preview ? (
+          <div
+            style={{
+              position: "relative",
+              flexShrink: 0,
+              ...(shape === "square" ? { width: "100%" } : {}),
+            }}
+          >
+            <img src={preview} alt="preview" style={previewStyle} />
+            {uploading && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: shape === "circle" ? "50%" : 12,
+                  background: "rgba(0,0,0,0.6)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <div
+                  style={{
+                    width: 24,
+                    height: 24,
+                    border: "2px solid #a78bfa",
+                    borderTopColor: "transparent",
+                    borderRadius: "50%",
+                    animation: "spin 0.8s linear infinite",
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div
+            style={{
+              ...(shape === "square" ? { width: "100%" } : {}),
+              ...placeholderStyle,
+            }}
+            onClick={() => inputRef.current?.click()}
+          >
+            <span style={{ fontSize: shape === "circle" ? 24 : 32 }}>📷</span>
+            <span
+              style={{
+                fontSize: 12,
+                color: "rgba(255,255,255,0.4)",
+                textAlign: "center",
+                padding: "0 8px",
+              }}
+            >
+              {shape === "circle" ? "Upload logo" : "Click to upload image"}
+            </span>
+          </div>
+        )}
+        {/* Buttons */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <button
+            onClick={() => inputRef.current?.click()}
+            style={{
+              background: "linear-gradient(135deg,#8245ec,#6366f1)",
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              padding: "9px 18px",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              whiteSpace: "nowrap",
+            }}
+          >
+            📁 Choose File
+          </button>
+          {uploading && (
+            <span style={{ fontSize: 11, color: "#a78bfa" }}>
+              Uploading to Cloudinary...
+            </span>
+          )}
+          {hint && !uploading && (
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>
+              {hint}
+            </span>
+          )}
+          {preview && !uploading && (
+            <button
+              onClick={() => {
+                setPreview("");
+                onUploaded("");
+              }}
+              style={{
+                background: "rgba(255,77,79,0.1)",
+                color: "#ff6b6b",
+                border: "1px solid rgba(255,107,107,0.2)",
+                borderRadius: 8,
+                padding: "6px 12px",
+                cursor: "pointer",
+                fontSize: 12,
+              }}
+            >
+              ✕ Remove
+            </button>
+          )}
+        </div>
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFile}
+        style={{ display: "none" }}
+      />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
 
+// ─── Hero Section ─────────────────────────────────────────────────────────
 function HeroSection({ data, onChange }) {
   const [rolesStr, setRolesStr] = useState(data?.roles?.join(", "));
+  const resumeInputRef = useRef();
+  const [resumeUploading, setResumeUploading] = useState(false);
 
   const handleRoles = (v) => {
     setRolesStr(v);
-
     onChange({
       ...data,
       roles: v
@@ -238,251 +324,268 @@ function HeroSection({ data, onChange }) {
     });
   };
 
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setResumeUploading(true);
+    try {
+      const res = await uploadImage(file);
+      onChange({ ...data, resumeUrl: res.data.url });
+    } catch (err) {
+      console.error("Resume upload failed:", err);
+    } finally {
+      setResumeUploading(false);
+    }
+  };
+
+  const inp = {
+    width: "100%",
+    padding: "13px 16px",
+    borderRadius: 14,
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.05)",
+    color: "#fff",
+    fontSize: 14,
+    outline: "none",
+    boxSizing: "border-box",
+  };
+  const lbl = {
+    fontSize: 12,
+    color: "rgba(255,255,255,0.6)",
+    marginBottom: 8,
+    display: "block",
+    fontWeight: 600,
+    letterSpacing: 0.4,
+  };
+  const box = {
+    background: "rgba(130,69,236,0.06)",
+    border: "1px solid rgba(130,69,236,0.15)",
+    borderRadius: 20,
+    padding: 20,
+  };
+
   return (
-    <div style={cardStyle}>
-      {/* Heading */}
-      <div
-        style={{
-          marginBottom: 24,
-          display: "flex",
-          alignItems: "center",
-          gap: 14,
-          flexWrap: "wrap",
-        }}
-      >
-        <div
-          style={{
-            width: 54,
-            height: 54,
-            borderRadius: 18,
-            background: "linear-gradient(135deg,#8245ec,#6366f1,#06b6d4)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 24,
-            boxShadow: "0 8px 20px rgba(130,69,236,0.35)",
-          }}
-        >
-          👨‍💻
-        </div>
-
-        <div>
-          <h2
-            style={{
-              margin: 0,
-              fontSize: 24,
-              fontWeight: 700,
-              color: "#fff",
-            }}
-          >
-            Hero Section
-          </h2>
-
-          <p
-            style={{
-              margin: "6px 0 0",
-              color: "rgba(255,255,255,0.6)",
-              fontSize: 13,
-            }}
-          >
-            Customize your portfolio introduction and identity
-          </p>
-        </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      {/* Profile Photo */}
+      <div style={box}>
+        <ImageUploadBox
+          label="Profile Photo"
+          currentUrl={data?.profileImage}
+          onUploaded={(url) => onChange({ ...data, profileImage: url })}
+          shape="circle"
+          hint="Square image recommended, min 300×300px"
+        />
       </div>
 
-      {/* Inputs */}
+      {/* Name + Greeting */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
-          gap: 18,
-          marginBottom: 20,
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: 16,
         }}
       >
         <div>
-          <label style={labelStyle}>Greeting Text</label>
-
+          <label style={lbl}>Greeting Text</label>
           <input
-            style={inputStyle}
+            style={inp}
             value={data?.greeting}
             placeholder="Hello, I am"
-            onChange={(e) =>
-              onChange({
-                ...data,
-                greeting: e.target.value,
-              })
-            }
+            onChange={(e) => onChange({ ...data, greeting: e.target.value })}
           />
         </div>
-
         <div>
-          <label style={labelStyle}>Your Name</label>
-
+          <label style={lbl}>Your Name</label>
           <input
-            style={inputStyle}
+            style={inp}
             value={data?.name}
             placeholder="Tushar Barik"
-            onChange={(e) =>
-              onChange({
-                ...data,
-                name: e.target.value,
-              })
-            }
+            onChange={(e) => onChange({ ...data, name: e.target.value })}
           />
         </div>
       </div>
 
       {/* Roles */}
-      <div style={{ marginBottom: 20 }}>
-        <label style={labelStyle}>Typing Roles (comma separated)</label>
-
+      <div>
+        <label style={lbl}>Typing Roles (comma separated)</label>
         <input
-          style={inputStyle}
+          style={inp}
           value={rolesStr}
           onChange={(e) => handleRoles(e.target.value)}
           placeholder="Fullstack Developer, App Developer"
         />
-
         <div
-          style={{
-            marginTop: 14,
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 10,
-          }}
+          style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 8 }}
         >
           {data?.roles?.map((r, i) => (
-            <div
+            <span
               key={i}
               style={{
-                background:
-                  "linear-gradient(135deg, rgba(130,69,236,0.18), rgba(99,102,241,0.18))",
-                border: "1px solid rgba(130,69,236,0.18)",
-                color: "#fff",
+                background: "rgba(130,69,236,0.18)",
+                border: "1px solid rgba(130,69,236,0.2)",
+                color: "#d8b4fe",
                 borderRadius: 999,
-                padding: "10px 14px",
+                padding: "8px 14px",
                 fontSize: 13,
-                fontWeight: 500,
-                backdropFilter: "blur(10px)",
               }}
             >
               ✨ {r}
-            </div>
+            </span>
           ))}
         </div>
       </div>
 
       {/* Bio */}
-      <div style={{ marginBottom: 20 }}>
-        <label style={labelStyle}>Bio / About Me</label>
-
+      <div>
+        <label style={lbl}>Bio / About Me</label>
         <textarea
           style={{
-            ...inputStyle,
-            minHeight: 140,
+            ...inp,
+            minHeight: 130,
             resize: "vertical",
             lineHeight: 1.7,
           }}
           value={data?.bio}
-          placeholder="Write something amazing about yourself..."
-          onChange={(e) =>
-            onChange({
-              ...data,
-              bio: e.target.value,
-            })
-          }
+          placeholder="Write about yourself..."
+          onChange={(e) => onChange({ ...data, bio: e.target.value })}
         />
       </div>
 
       {/* Resume */}
-      <div>
-        <label style={labelStyle}>Resume / CV Link</label>
-
+      <div style={box}>
+        <label style={lbl}>Resume / CV</label>
+        <label style={{ ...lbl, marginTop: 0 }}>
+          Option 1 — Paste a Google Drive / any URL
+        </label>
         <input
-          style={inputStyle}
+          style={inp}
           value={data?.resumeUrl}
           placeholder="https://drive.google.com/..."
-          onChange={(e) =>
-            onChange({
-              ...data,
-              resumeUrl: e.target.value,
-            })
-          }
+          onChange={(e) => onChange({ ...data, resumeUrl: e.target.value })}
         />
 
-        {/* Preview */}
         <div
           style={{
-            marginTop: 18,
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(130,69,236,0.15)",
-            borderRadius: 18,
-            padding: 18,
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
-            flexWrap: "wrap",
             gap: 12,
+            margin: "16px 0",
           }}
         >
-          <div>
-            <div
-              style={{
-                color: "#fff",
-                fontWeight: 600,
-                marginBottom: 4,
-              }}
-            >
-              Resume Preview
-            </div>
+          <div
+            style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }}
+          />
+          <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>
+            OR
+          </span>
+          <div
+            style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }}
+          />
+        </div>
 
-            <div
-              style={{
-                fontSize: 12,
-                color: "rgba(255,255,255,0.55)",
-              }}
-            >
-              Your visitors can download your resume directly
-            </div>
-          </div>
-
-          <a
-            href={data?.resumeUrl}
-            target="_blank"
-            rel="noreferrer"
+        <label style={{ ...lbl, marginBottom: 10 }}>
+          Option 2 — Upload from device (PDF / DOC / Image)
+        </label>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <button
+            onClick={() => resumeInputRef.current?.click()}
             style={{
-              textDecoration: "none",
+              background: "linear-gradient(135deg,#8245ec,#6366f1)",
+              color: "#fff",
+              border: "none",
+              borderRadius: 12,
+              padding: "11px 20px",
+              cursor: "pointer",
+              fontSize: 14,
+              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
             }}
           >
-            <button style={btnPrimary}>View Resume ↗</button>
-          </a>
+            📄 Choose Resume File
+          </button>
+          {resumeUploading && (
+            <span style={{ color: "#a78bfa", fontSize: 13 }}>Uploading...</span>
+          )}
+          {data?.resumeUrl && !resumeUploading && (
+            <a
+              href={data.resumeUrl}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#a78bfa", fontSize: 13 }}
+            >
+              View current resume ↗
+            </a>
+          )}
         </div>
+        <input
+          ref={resumeInputRef}
+          type="file"
+          accept=".pdf,.doc,.docx,image/*"
+          onChange={handleResumeUpload}
+          style={{ display: "none" }}
+        />
+        <p
+          style={{
+            color: "rgba(255,255,255,0.3)",
+            fontSize: 11,
+            marginTop: 10,
+          }}
+        >
+          Accepted: PDF, DOC, DOCX, Images — uploaded to Cloudinary, URL
+          auto-fills above
+        </p>
       </div>
     </div>
   );
 }
 
 function SkillsSection({ data, onChange }) {
-  const [newSkill, setNewSkill] = useState({});
-  const [skillLogo, setSkillLogo] = useState({});
+  const [newSkillName, setNewSkillName] = useState({});
+  const [newSkillLogo, setNewSkillLogo] = useState({}); // { catId: "cloudinary_url" }
+  const [logoUploading, setLogoUploading] = useState({}); // { catId: true/false }
   const [openSections, setOpenSections] = useState(
-    data?.reduce((acc, cat) => {
-      acc[cat.id] = true;
-      return acc;
+    data?.reduce((a, c) => {
+      a[c.id] = true;
+      return a;
     }, {}),
   );
 
-  const toggleSection = (id) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+  const logoInputRefs = useRef({}); // ek ref per category
+
+  const toggleSection = (id) =>
+    setOpenSections((p) => ({ ...p, [id]: !p[id] }));
+
+  // Logo upload for new skill being added
+  const handleLogoFile = async (catId, file) => {
+    if (!file) return;
+    // Instant local preview
+    const reader = new FileReader();
+    reader.onloadend = () =>
+      setNewSkillLogo((p) => ({ ...p, [catId]: reader.result }));
+    reader.readAsDataURL(file);
+    // Upload to Cloudinary
+    setLogoUploading((p) => ({ ...p, [catId]: true }));
+    try {
+      const res = await uploadImage(file);
+      setNewSkillLogo((p) => ({ ...p, [catId]: res.data.url }));
+    } catch (err) {
+      console.error("Logo upload failed:", err);
+    } finally {
+      setLogoUploading((p) => ({ ...p, [catId]: false }));
+    }
   };
 
-  // ADD SKILL
   const addSkill = (catId) => {
-    if (!newSkill[catId]?.trim()) return;
-
+    if (!newSkillName[catId]?.trim()) return;
     onChange(
       data.map((cat) =>
         cat.id === catId
@@ -491,63 +594,37 @@ function SkillsSection({ data, onChange }) {
               skills: [
                 ...cat.skills,
                 {
-                  name: newSkill[catId].trim(),
-                  logo: skillLogo[catId] || "",
+                  name: newSkillName[catId].trim(),
+                  logo: newSkillLogo[catId] || "",
                 },
               ],
             }
           : cat,
       ),
     );
-
-    setNewSkill({
-      ...newSkill,
-      [catId]: "",
-    });
-
-    setSkillLogo({
-      ...skillLogo,
-      [catId]: "",
-    });
+    setNewSkillName((p) => ({ ...p, [catId]: "" }));
+    setNewSkillLogo((p) => ({ ...p, [catId]: "" }));
   };
 
-  // REMOVE SKILL
-  const removeSkill = (catId, idx) => {
+  const removeSkill = (catId, idx) =>
     onChange(
       data?.map((cat) =>
         cat.id === catId
-          ? {
-              ...cat,
-              skills: cat.skills.filter((_, i) => i !== idx),
-            }
+          ? { ...cat, skills: cat.skills.filter((_, i) => i !== idx) }
           : cat,
       ),
     );
-  };
 
-  // ADD CATEGORY
   const addCategory = () => {
-    const newId = Date.now();
-
-    onChange([
-      ...data,
-      {
-        id: newId,
-        title: "New Category",
-        skills: [],
-      },
-    ]);
-
-    setOpenSections((prev) => ({
-      ...prev,
-      [newId]: true,
-    }));
+    const id = Date.now();
+    onChange([...data, { id, title: "New Category", skills: [] }]);
+    setOpenSections((p) => ({ ...p, [id]: true }));
   };
 
-  // REMOVE CATEGORY
-  const removeCategory = (id) => {
-    onChange(data.filter((c) => c.id !== id));
-  };
+  const removeCategory = (id) => onChange(data.filter((c) => c.id !== id));
+
+  const inputCls =
+    "w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -556,16 +633,13 @@ function SkillsSection({ data, onChange }) {
           key={cat.id}
           style={{
             background:
-              "linear-gradient(145deg, rgba(18,18,35,0.95), rgba(10,10,20,0.95))",
+              "linear-gradient(145deg,rgba(18,18,35,.95),rgba(10,10,20,.95))",
             border: "1px solid rgba(130,69,236,0.15)",
             borderRadius: 22,
             overflow: "hidden",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.35)",
-            backdropFilter: "blur(14px)",
-            transition: "0.3s",
           }}
         >
-          {/* HEADER */}
+          {/* Category Header */}
           <div
             onClick={() => toggleSection(cat.id)}
             style={{
@@ -598,19 +672,16 @@ function SkillsSection({ data, onChange }) {
                   width: 42,
                   height: 42,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg,#8245ec,#a855f7,#6366f1)",
+                  background: "linear-gradient(135deg,#8245ec,#a855f7)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: 18,
-                  color: "#fff",
-                  fontWeight: 700,
-                  boxShadow: "0 4px 15px rgba(130,69,236,0.4)",
+                  flexShrink: 0,
                 }}
               >
                 ⚡
               </div>
-
               <div style={{ flex: 1, minWidth: 0 }}>
                 <input
                   style={{
@@ -632,26 +703,18 @@ function SkillsSection({ data, onChange }) {
                     )
                   }
                 />
-
                 <div
                   style={{
                     fontSize: 12,
-                    color: "rgba(255,255,255,0.55)",
-                    marginTop: 3,
+                    color: "rgba(255,255,255,0.45)",
+                    marginTop: 2,
                   }}
                 >
-                  {cat?.skills?.length} Skills Added
+                  {cat?.skills?.length} skills
                 </div>
               </div>
             </div>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
+            <div style={{ display: "flex", gap: 10 }}>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -670,7 +733,6 @@ function SkillsSection({ data, onChange }) {
               >
                 Remove
               </button>
-
               <div
                 style={{
                   width: 34,
@@ -681,7 +743,6 @@ function SkillsSection({ data, onChange }) {
                   alignItems: "center",
                   justifyContent: "center",
                   color: "#fff",
-                  fontSize: 16,
                   transition: "0.3s",
                   transform: openSections[cat.id]
                     ? "rotate(180deg)"
@@ -693,42 +754,33 @@ function SkillsSection({ data, onChange }) {
             </div>
           </div>
 
-          {/* CONTENT */}
           {openSections[cat.id] && (
-            <div
-              style={{
-                padding: 20,
-                animation: "fadeIn 0.25s ease",
-              }}
-            >
-              {/* SKILLS */}
+            <div style={{ padding: 20 }}>
+              {/* Existing Skills */}
               <div
                 style={{
                   display: "flex",
                   flexWrap: "wrap",
                   gap: 10,
-                  marginBottom: 18,
+                  marginBottom: 20,
                 }}
               >
                 {cat.skills.map((sk, i) => (
                   <div
                     key={i}
                     style={{
-                      background:
-                        "linear-gradient(135deg, rgba(130,69,236,0.18), rgba(99,102,241,0.18))",
+                      background: "rgba(130,69,236,0.18)",
                       border: "1px solid rgba(130,69,236,0.18)",
                       borderRadius: 999,
-                      padding: "9px 14px",
+                      padding: "8px 14px",
                       fontSize: 13,
                       color: "#fff",
                       display: "flex",
                       alignItems: "center",
-                      gap: 10,
-                      transition: "0.2s",
+                      gap: 8,
                     }}
                   >
-                    {/* LOGO */}
-                    {sk.logo && (
+                    {sk.logo ? (
                       <img
                         src={sk.logo}
                         alt={sk.name}
@@ -741,165 +793,257 @@ function SkillsSection({ data, onChange }) {
                           padding: 2,
                         }}
                       />
+                    ) : (
+                      <span style={{ fontSize: 16 }}>🔧</span>
                     )}
-
-                    {/* NAME */}
                     <span>{sk.name}</span>
-
-                    {/* REMOVE */}
                     <span
                       onClick={() => removeSkill(cat.id, i)}
                       style={{
                         cursor: "pointer",
                         color: "#ff7b7b",
                         fontWeight: "bold",
-                        fontSize: 13,
                       }}
                     >
                       ✕
                     </span>
                   </div>
                 ))}
+                {cat.skills.length === 0 && (
+                  <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>
+                    No skills yet — add one below
+                  </p>
+                )}
               </div>
 
-              {/* ADD SKILL */}
+              {/* Add New Skill */}
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 14,
+                  background: "rgba(130,69,236,0.06)",
+                  border: "1px solid rgba(130,69,236,0.15)",
+                  borderRadius: 16,
+                  padding: 16,
                 }}
               >
-                <div
+                <p
                   style={{
-                    display: "flex",
-                    gap: 12,
-                    flexWrap: "wrap",
+                    color: "rgba(255,255,255,0.55)",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    marginBottom: 14,
+                    letterSpacing: 0.4,
                   }}
                 >
-                  {/* SKILL NAME */}
-                  <input
+                  ADD NEW SKILL
+                </p>
+
+                {/* Skill Name */}
+                <div style={{ marginBottom: 14 }}>
+                  <label
                     style={{
-                      flex: 1,
-                      minWidth: 220,
-                      padding: "14px 16px",
-                      borderRadius: 14,
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      background: "rgba(255,255,255,0.04)",
-                      color: "#fff",
-                      fontSize: 14,
-                      outline: "none",
-                      backdropFilter: "blur(8px)",
+                      fontSize: 12,
+                      color: "rgba(255,255,255,0.5)",
+                      marginBottom: 6,
+                      display: "block",
                     }}
-                    placeholder="Add skill..."
-                    value={newSkill[cat.id] || ""}
+                  >
+                    Skill Name
+                  </label>
+                  <input
+                    className={inputCls}
+                    placeholder="e.g. React JS"
+                    value={newSkillName[cat.id] || ""}
                     onChange={(e) =>
-                      setNewSkill({
-                        ...newSkill,
+                      setNewSkillName((p) => ({
+                        ...p,
                         [cat.id]: e.target.value,
-                      })
+                      }))
                     }
                     onKeyDown={(e) => e.key === "Enter" && addSkill(cat.id)}
                   />
-
-                  {/* ADD BUTTON */}
-                  <button
-                    onClick={() => addSkill(cat.id)}
-                    style={{
-                      background: "linear-gradient(135deg,#8245ec,#6366f1)",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: 14,
-                      padding: "0 24px",
-                      minHeight: 48,
-                      cursor: "pointer",
-                      fontWeight: 600,
-                      fontSize: 14,
-                      boxShadow: "0 6px 20px rgba(130,69,236,0.35)",
-                    }}
-                  >
-                    + Add Skill
-                  </button>
                 </div>
 
-                {/* FILE UPLOAD */}
-                <div>
+                {/* Skill Logo Upload */}
+                <div style={{ marginBottom: 16 }}>
                   <label
                     style={{
-                      display: "block",
-                      color: "rgba(255,255,255,0.7)",
+                      fontSize: 12,
+                      color: "rgba(255,255,255,0.5)",
                       marginBottom: 8,
-                      fontSize: 13,
+                      display: "block",
                     }}
                   >
-                    Upload Skill Logo
+                    Skill Logo{" "}
+                    <span style={{ color: "rgba(255,255,255,0.3)" }}>
+                      (optional)
+                    </span>
                   </label>
-
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-
-                      if (file) {
-                        const reader = new FileReader();
-
-                        reader.onloadend = () => {
-                          setSkillLogo({
-                            ...skillLogo,
-                            [cat.id]: reader.result,
-                          });
-                        };
-
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                    style={{
-                      color: "#fff",
-                      fontSize: 13,
-                    }}
-                  />
-                </div>
-
-                {/* PREVIEW */}
-                {skillLogo[cat.id] && (
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: 12,
+                      gap: 14,
+                      flexWrap: "wrap",
                     }}
                   >
-                    <img
-                      src={skillLogo[cat.id]}
-                      alt="preview"
-                      style={{
-                        width: 50,
-                        height: 50,
-                        objectFit: "contain",
-                        borderRadius: 12,
-                        background: "#fff",
-                        padding: 6,
-                      }}
-                    />
+                    {/* Preview */}
+                    {newSkillLogo[cat.id] ? (
+                      <div style={{ position: "relative" }}>
+                        <img
+                          src={newSkillLogo[cat.id]}
+                          alt="logo preview"
+                          style={{
+                            width: 52,
+                            height: 52,
+                            objectFit: "contain",
+                            borderRadius: 10,
+                            background: "#fff",
+                            padding: 4,
+                            border: "2px solid rgba(130,69,236,0.4)",
+                          }}
+                        />
+                        {logoUploading[cat.id] && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              inset: 0,
+                              borderRadius: 10,
+                              background: "rgba(0,0,0,0.6)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: 18,
+                                height: 18,
+                                border: "2px solid #a78bfa",
+                                borderTopColor: "transparent",
+                                borderRadius: "50%",
+                                animation: "spin 0.8s linear infinite",
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          width: 52,
+                          height: 52,
+                          borderRadius: 10,
+                          background: "rgba(130,69,236,0.1)",
+                          border: "2px dashed rgba(130,69,236,0.3)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 22,
+                        }}
+                      >
+                        🖼️
+                      </div>
+                    )}
 
-                    <span
+                    <div
                       style={{
-                        color: "rgba(255,255,255,0.7)",
-                        fontSize: 13,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 6,
                       }}
                     >
-                      Logo Preview
-                    </span>
+                      <button
+                        onClick={() => logoInputRefs.current[cat.id]?.click()}
+                        style={{
+                          background: "linear-gradient(135deg,#8245ec,#6366f1)",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 10,
+                          padding: "8px 16px",
+                          cursor: "pointer",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 7,
+                        }}
+                      >
+                        📁 Choose Logo
+                      </button>
+                      {logoUploading[cat.id] && (
+                        <span style={{ fontSize: 11, color: "#a78bfa" }}>
+                          Uploading...
+                        </span>
+                      )}
+                      {newSkillLogo[cat.id] && !logoUploading[cat.id] && (
+                        <button
+                          onClick={() =>
+                            setNewSkillLogo((p) => ({ ...p, [cat.id]: "" }))
+                          }
+                          style={{
+                            background: "rgba(255,77,79,0.1)",
+                            color: "#ff6b6b",
+                            border: "1px solid rgba(255,107,107,0.2)",
+                            borderRadius: 8,
+                            padding: "5px 10px",
+                            cursor: "pointer",
+                            fontSize: 11,
+                          }}
+                        >
+                          ✕ Remove
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      ref={(el) => (logoInputRefs.current[cat.id] = el)}
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) =>
+                        handleLogoFile(cat.id, e.target.files?.[0])
+                      }
+                    />
                   </div>
-                )}
+                  <p
+                    style={{
+                      fontSize: 11,
+                      color: "rgba(255,255,255,0.3)",
+                      marginTop: 8,
+                    }}
+                  >
+                    PNG/SVG recommended — uploaded to Cloudinary
+                  </p>
+                </div>
+
+                {/* Add Button */}
+                <button
+                  onClick={() => addSkill(cat.id)}
+                  disabled={
+                    !newSkillName[cat.id]?.trim() || logoUploading[cat.id]
+                  }
+                  style={{
+                    background: "linear-gradient(135deg,#8245ec,#6366f1)",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 14,
+                    padding: "12px 24px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    opacity:
+                      !newSkillName[cat.id]?.trim() || logoUploading[cat.id]
+                        ? 0.5
+                        : 1,
+                  }}
+                >
+                  + Add Skill
+                </button>
               </div>
             </div>
           )}
         </div>
       ))}
 
-      {/* ADD CATEGORY */}
       <button
         onClick={addCategory}
         style={{
@@ -912,7 +1056,6 @@ function SkillsSection({ data, onChange }) {
           cursor: "pointer",
           fontSize: 15,
           fontWeight: 600,
-          transition: "0.3s",
         }}
       >
         ✨ Add Skill Category
@@ -921,244 +1064,40 @@ function SkillsSection({ data, onChange }) {
   );
 }
 
-// function ExperienceSection({ data, onChange }) {
-//   const [newSkill, setNewSkill] = useState({});
-
-//   const update = (id, field, val) =>
-//     onChange(data.map((e) => (e.id === id ? { ...e, [field]: val } : e)));
-
-//   const addSkill = (id) => {
-//     const s = (newSkill[id] || "")
-//       .trim()
-//       .split(",")
-//       .map((s) => s.trim());
-//     if (!s) return;
-//     onChange(
-//       data.map((e) =>
-//         e.id === id ? { ...e, skills: [...e.skills, ...s] } : e,
-//       ),
-//     );
-
-//     setNewSkill({ ...newSkill, [id]: "" });
-//   };
-
-//   const removeSkill = (id, idx) =>
-//     onChange(
-//       data.map((e) =>
-//         e.id === id
-//           ? {
-//               ...e,
-//               skills: e.skills.filter((_, i) => i !== idx),
-//             }
-//           : e,
-//       ),
-//     );
-
-//   const addExp = () =>
-//     onChange([
-//       ...data,
-//       {
-//         id: Date.now(),
-//         role: "",
-//         company: "",
-//         date: "",
-//         desc: "",
-//         skills: [],
-//       },
-//     ]);
-
-//   const removeExp = (id) => onChange(data.filter((e) => e.id !== id));
-
-//   return (
-//     <div className="space-y-6">
-//       {data?.map((exp) => (
-//         <div
-//           key={exp.id}
-//           className="relative overflow-hidden rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 backdrop-blur-xl p-6 shadow-[0_0_40px_rgba(130,69,236,0.15)]"
-//         >
-//           {/* Glow */}
-//           <div className="absolute top-0 right-0 h-32 w-32 bg-purple-500/10 blur-3xl rounded-full"></div>
-
-//           {/* Header */}
-//           <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-//             <div>
-//               <h3 className="text-xl font-bold text-white">
-//                 {exp.role || "New Experience"}
-//               </h3>
-//               <p className="text-sm text-purple-300">
-//                 {exp.company || "Company Name"}
-//               </p>
-//             </div>
-
-//             <button
-//               onClick={() => removeExp(exp.id)}
-//               className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition"
-//             >
-//               Remove
-//             </button>
-//           </div>
-
-//           {/* Inputs */}
-//           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-//             <div>
-//               <label className="text-sm text-gray-300 mb-2 block">
-//                 Role / Position
-//               </label>
-
-//               <input
-//                 value={exp.role}
-//                 onChange={(e) => update(exp.id, "role", e.target.value)}
-//                 placeholder="Frontend Developer"
-//                 className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
-//               />
-//             </div>
-
-//             <div>
-//               <label className="text-sm text-gray-300 mb-2 block">
-//                 Company
-//               </label>
-
-//               <input
-//                 value={exp.company}
-//                 onChange={(e) => update(exp.id, "company", e.target.value)}
-//                 placeholder="Google"
-//                 className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
-//               />
-//             </div>
-
-//             <div className="md:col-span-2">
-//               <label className="text-sm text-gray-300 mb-2 block">
-//                 Date Range
-//               </label>
-
-//               <input
-//                 value={exp.date}
-//                 placeholder="June 2025 - July 2025"
-//                 onChange={(e) => update(exp.id, "date", e.target.value)}
-//                 className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
-//               />
-//             </div>
-//           </div>
-
-//           {/* Description */}
-//           <div className="mt-5">
-//             <label className="text-sm text-gray-300 mb-2 block">
-//               Description
-//             </label>
-
-//             <textarea
-//               value={exp.desc}
-//               onChange={(e) => update(exp.id, "desc", e.target.value)}
-//               placeholder="Describe your work..."
-//               rows={5}
-//               className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none resize-none focus:border-purple-500 transition"
-//             />
-//           </div>
-
-//           {/* Skills */}
-//           <div className="mt-5">
-//             <label className="text-sm text-gray-300 mb-3 block">
-//               Skills Used
-//             </label>
-
-//             <div className="flex flex-wrap gap-3 mb-4">
-//               {exp.skills.map((sk, i) => (
-//                 <div
-//                   key={i}
-//                   className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm text-purple-200"
-//                 >
-//                   {sk}
-
-//                   <button
-//                     onClick={() => removeSkill(exp.id, i)}
-//                     className="text-red-400 hover:text-red-300"
-//                   >
-//                     ✕
-//                   </button>
-//                 </div>
-//               ))}
-//             </div>
-
-//             <div className="flex flex-col sm:flex-row gap-3">
-//               <input
-//                 value={newSkill[exp.id] || ""}
-//                 placeholder="Add skill..."
-//                 onChange={(e) =>
-//                   setNewSkill({
-//                     ...newSkill,
-//                     [exp.id]: e.target.value,
-//                   })
-//                 }
-//                 onKeyDown={(e) => e.key === "Enter" && addSkill(exp.id)}
-//                 className="flex-1 rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
-//               />
-
-//               <button
-//                 onClick={() => addSkill(exp.id)}
-//                 className="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-3 font-semibold text-white hover:scale-[1.02] transition"
-//               >
-//                 + Add Skill
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       ))}
-
-//       {/* Add Experience */}
-//       <button
-//         onClick={addExp}
-//         className="w-full rounded-3xl border border-dashed border-purple-500/40 bg-purple-500/5 py-4 text-purple-300 hover:bg-purple-500/10 transition"
-//       >
-//         + Add Experience
-//       </button>
-//     </div>
-//   );
-// }
-
+// ─── Experience Section ───────────────────────────────────────────────────
 function ExperienceSection({ data, onChange }) {
   const [newSkill, setNewSkill] = useState({});
   const [openCards, setOpenCards] = useState({});
 
-  const toggleCard = (id) => {
-    setOpenCards((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
+  const toggleCard = (id) => setOpenCards((p) => ({ ...p, [id]: !p[id] }));
   const update = (id, field, val) =>
-    onChange(data.map((e) => (e.id === id ? { ...e, [field]: val } : e)));
-
+    onChange(
+      data.map((e) =>
+        e._id === id || e.id === id ? { ...e, [field]: val } : e,
+      ),
+    );
   const addSkill = (id) => {
     const s = (newSkill[id] || "")
       .trim()
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
-
     if (!s.length) return;
-
     onChange(
       data.map((e) =>
-        e.id === id ? { ...e, skills: [...e.skills, ...s] } : e,
+        e._id === id || e.id === id ? { ...e, skills: [...e.skills, ...s] } : e,
       ),
     );
-
     setNewSkill({ ...newSkill, [id]: "" });
   };
-
   const removeSkill = (id, idx) =>
     onChange(
       data.map((e) =>
-        e.id === id
-          ? {
-              ...e,
-              skills: e.skills.filter((_, i) => i !== idx),
-            }
+        e._id === id || e.id === id
+          ? { ...e, skills: e.skills.filter((_, i) => i !== idx) }
           : e,
       ),
     );
-
   const addExp = () =>
     onChange([
       ...data,
@@ -1166,181 +1105,208 @@ function ExperienceSection({ data, onChange }) {
         id: Date.now(),
         role: "",
         company: "",
-        companyLogo: "", // new field
+        companyLogo: "",
         date: "",
+        mode: "",
         desc: "",
         skills: [],
       },
     ]);
-
-  const handleLogoUpload = async (e, expId) => {
-    const file = e.target.files?.[0];
-
-    if (!file) return;
-
-    try {
-      const res = await uploadImage(file);
-
-      update(expId, "companyLogo", res.data.url);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const removeExp = (id) => onChange(data.filter((e) => e.id !== id));
+  const removeExp = (id) =>
+    onChange(data.filter((e) => e._id !== id && e.id !== id));
+  const inputCls =
+    "w-full rounded-2xl border border-white/10 bg-[#140d2e]/90 px-4 py-3 text-white placeholder:text-gray-500 outline-none transition-all duration-300 focus:border-[#8245ec] focus:bg-[#1a1238] focus:shadow-[0_0_0_4px_rgba(130,69,236,0.15)]";
 
   return (
     <div className="space-y-6">
       {data?.map((exp) => {
-        const isOpen = openCards[exp.id] ?? true;
+        const id = exp._id || exp.id; // support both _id (from DB) and id (new entries)
+        const isOpen = openCards[id] ?? false;
 
         return (
           <div
-            key={exp.id}
-            className="relative overflow-hidden rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 backdrop-blur-xl p-6 shadow-[0_0_40px_rgba(130,69,236,0.15)]"
+            key={id}
+            className="group relative overflow-hidden rounded-[30px] border border-purple-500/20 bg-[linear-gradient(145deg,rgba(15,10,36,.96),rgba(10,8,24,.96))] p-5 shadow-[0_10px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:shadow-[0_15px_60px_rgba(130,69,236,0.18)] sm:p-6"
           >
-            {/* Glow */}
-            <div className="absolute top-0 right-0 h-32 w-32 bg-purple-500/10 blur-3xl rounded-full"></div>
+            {/* Glow Effects */}
+            <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-purple-500/10 blur-3xl" />
+            <div className="absolute bottom-0 left-0 h-32 w-32 rounded-full bg-pink-500/10 blur-3xl" />
 
             {/* Header */}
-            <div className="relative flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                {/* Company Logo Preview */}
+            <div className="relative mb-5 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex min-w-0 items-center gap-4">
+                {/* Logo */}
                 {exp.companyLogo ? (
                   <img
                     src={exp.companyLogo}
-                    alt="company-logo"
-                    className="w-14 h-14 rounded-2xl object-cover border border-white/10"
+                    alt="logo"
+                    className="h-16 w-16 flex-shrink-0 rounded-2xl border border-white/10 object-cover shadow-lg"
                   />
                 ) : (
-                  <div className="w-14 h-14 rounded-2xl bg-[#140d2e] border border-white/10 flex items-center justify-center text-gray-400 text-xs">
+                  <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[#140d2e] text-xs text-gray-500">
                     Logo
                   </div>
                 )}
 
-                <div>
-                  <h3 className="text-xl font-bold text-white">
+                {/* Info */}
+                <div className="min-w-0">
+                  <h3 className="truncate text-lg font-bold text-white sm:text-[22px]">
                     {exp.role || "New Experience"}
                   </h3>
 
-                  <p className="text-sm text-purple-300">
+                  <p className="mt-1 text-sm font-medium text-purple-300">
                     {exp.company || "Company Name"}
                   </p>
+
+                  <div className="mt-2 flex items-center gap-2 text-[11px] text-gray-500">
+                    <div className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+                    Experience Card
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                {/* Open / Close Button */}
+              {/* Actions */}
+              <div className="flex flex-wrap gap-3">
                 <button
-                  onClick={() => toggleCard(exp.id)}
-                  className="px-4 py-2 rounded-xl border border-purple-500/30 text-purple-300 hover:bg-purple-500/10 transition"
+                  onClick={() => toggleCard(id)}
+                  className="rounded-xl border border-purple-500/30 bg-purple-500/5 px-4 py-2 text-sm font-medium text-purple-300 transition-all duration-300 hover:bg-purple-500/10"
                 >
                   {isOpen ? "Close" : "Open"}
                 </button>
 
-                {/* Remove Button */}
                 <button
-                  onClick={() => removeExp(exp.id)}
-                  className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition"
+                  onClick={() => removeExp(id)}
+                  className="rounded-xl border border-red-500/30 bg-red-500/5 px-4 py-2 text-sm font-medium text-red-400 transition-all duration-300 hover:bg-red-500/10"
                 >
                   Remove
                 </button>
               </div>
             </div>
 
-            {/* Content */}
             {isOpen && (
-              <>
+              <div className="relative space-y-5">
+                {/* Upload Section */}
+                <div className="rounded-3xl border border-purple-500/15 bg-[rgba(130,69,236,0.06)] p-5 backdrop-blur-xl">
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-white">
+                      Company Branding
+                    </h4>
+                    <p className="mt-1 text-[12px] text-gray-400">
+                      Upload company logo for better presentation
+                    </p>
+                  </div>
+
+                  <ImageUploadBox
+                    label="Company Logo"
+                    currentUrl={exp.companyLogo}
+                    onUploaded={(url) => update(id, "companyLogo", url)}
+                    shape="circle"
+                    hint="PNG/JPG square recommended"
+                  />
+                </div>
+
                 {/* Inputs */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  {/* Role */}
                   <div>
-                    <label className="text-sm text-gray-300 mb-2 block">
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
                       Role / Position
                     </label>
 
                     <input
                       value={exp.role}
-                      onChange={(e) => update(exp.id, "role", e.target.value)}
+                      onChange={(e) => update(id, "role", e.target.value)}
                       placeholder="Frontend Developer"
-                      className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+                      className={inputCls}
                     />
                   </div>
 
+                  {/* Company */}
                   <div>
-                    <label className="text-sm text-gray-300 mb-2 block">
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
                       Company
                     </label>
 
                     <input
                       value={exp.company}
-                      onChange={(e) =>
-                        update(exp.id, "company", e.target.value)
-                      }
+                      onChange={(e) => update(id, "company", e.target.value)}
                       placeholder="Google"
-                      className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+                      className={inputCls}
                     />
                   </div>
 
-                  {/* Company Logo Upload */}
-                  <div className="md:col-span-2">
-                    <label className="text-sm text-gray-300 mb-2 block">
-                      Company Logo
-                    </label>
-
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleLogoUpload(e, exp.id)}
-                      className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white file:mr-4 file:rounded-xl file:border-0 file:bg-purple-600 file:px-4 file:py-2 file:text-white"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="text-sm text-gray-300 mb-2 block">
+                  {/* Date */}
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
                       Date Range
                     </label>
 
                     <input
                       value={exp.date}
+                      onChange={(e) => update(id, "date", e.target.value)}
                       placeholder="June 2025 - July 2025"
-                      onChange={(e) => update(exp.id, "date", e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+                      className={inputCls}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Mode of Work
+                    </label>
+
+                    <input
+                      value={exp.mode}
+                      onChange={(e) => update(id, "mode", e.target.value)}
+                      placeholder="Remote / On-site / Hybrid"
+                      className={inputCls}
                     />
                   </div>
                 </div>
 
                 {/* Description */}
-                <div className="mt-5">
-                  <label className="text-sm text-gray-300 mb-2 block">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
                     Description
                   </label>
 
                   <textarea
                     value={exp.desc}
-                    onChange={(e) => update(exp.id, "desc", e.target.value)}
-                    placeholder="Describe your work..."
+                    onChange={(e) => update(id, "desc", e.target.value)}
+                    placeholder="Describe your work and achievements..."
                     rows={5}
-                    className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none resize-none focus:border-purple-500 transition"
+                    className={`${inputCls} resize-none`}
                   />
                 </div>
 
                 {/* Skills */}
-                <div className="mt-5">
-                  <label className="text-sm text-gray-300 mb-3 block">
-                    Skills Used
-                  </label>
+                <div className="rounded-3xl border border-purple-500/15 bg-white/[0.02] p-5">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-semibold text-white">
+                        Skills Used
+                      </h4>
 
-                  <div className="flex flex-wrap gap-3 mb-4">
+                      <p className="mt-1 text-[12px] text-gray-400">
+                        Technologies used in this experience
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-purple-500/10 px-3 py-1 text-[11px] text-purple-300">
+                      {exp.skills.length} Skills
+                    </div>
+                  </div>
+
+                  {/* Skills List */}
+                  <div className="mb-5 flex flex-wrap gap-3">
                     {exp.skills.map((sk, i) => (
                       <div
-                        key={i}
-                        className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm text-purple-200"
+                        key={`${sk}-${i}`}
+                        className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm text-purple-200 transition-all duration-300 hover:bg-purple-500/20"
                       >
-                        {sk}
+                        <span>{sk}</span>
 
                         <button
-                          onClick={() => removeSkill(exp.id, i)}
-                          className="text-red-400 hover:text-red-300"
+                          onClick={() => removeSkill(id, i)}
+                          className="text-red-400 transition-all hover:text-red-300"
                         >
                           ✕
                         </button>
@@ -1348,29 +1314,30 @@ function ExperienceSection({ data, onChange }) {
                     ))}
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  {/* Add Skill */}
+                  <div className="flex flex-col gap-3 sm:flex-row">
                     <input
-                      value={newSkill[exp.id] || ""}
-                      placeholder="Add skill..."
+                      value={newSkill[id] || ""}
+                      placeholder="Add skill (comma separated)..."
                       onChange={(e) =>
                         setNewSkill({
                           ...newSkill,
-                          [exp.id]: e.target.value,
+                          [id]: e.target.value,
                         })
                       }
-                      onKeyDown={(e) => e.key === "Enter" && addSkill(exp.id)}
-                      className="flex-1 rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
+                      onKeyDown={(e) => e.key === "Enter" && addSkill(id)}
+                      className={`${inputCls} flex-1`}
                     />
 
                     <button
-                      onClick={() => addSkill(exp.id)}
-                      className="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-3 font-semibold text-white hover:scale-[1.02] transition"
+                      onClick={() => addSkill(id)}
+                      className="rounded-2xl bg-gradient-to-r from-purple-600 via-[#8245ec] to-pink-500 px-6 py-3 font-semibold text-white shadow-lg shadow-purple-900/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-purple-900/50"
                     >
                       + Add Skill
                     </button>
                   </div>
                 </div>
-              </>
+              </div>
             )}
           </div>
         );
@@ -1379,26 +1346,44 @@ function ExperienceSection({ data, onChange }) {
       {/* Add Experience */}
       <button
         onClick={addExp}
-        className="w-full rounded-3xl border border-dashed border-purple-500/40 bg-purple-500/5 py-4 text-purple-300 hover:bg-purple-500/10 transition"
+        className="group relative w-full overflow-hidden rounded-[28px] border border-dashed border-purple-500/40 bg-purple-500/5 py-5 text-purple-300 transition-all duration-300 hover:border-purple-500/70 hover:bg-purple-500/10"
       >
-        + Add Experience
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+        <span className="relative z-10 flex items-center justify-center gap-2 text-[15px] font-semibold">
+          ✨ + Add Experience
+        </span>
       </button>
     </div>
   );
 }
 
+// ─── Projects Section ─────────────────────────────────────────────────────
 function ProjectsSection({ data, onChange }) {
   const [newTag, setNewTag] = useState({});
+  const [openProjects, setOpenProjects] = useState({});
+
+  const toggleProject = (id) =>
+    setOpenProjects((p) => ({
+      ...p,
+      [id]: !p[id],
+    }));
 
   const update = (id, field, val) =>
-    onChange(data.map((p) => (p.id === id ? { ...p, [field]: val } : p)));
+    onChange(data.map((p) => (p._id === id ? { ...p, [field]: val } : p)));
 
   const addTag = (id) => {
-    const t = (newTag[id] || "").trim();
-    if (!t) return;
+    const t = (newTag[id] || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    if (!t.length) return;
 
     onChange(
-      data.map((p) => (p.id === id ? { ...p, tags: [...p.tags, t] } : p)),
+      data.map((p) =>
+        p._id === id || p.id === id ? { ...p, tags: [...p.tags, ...t] } : p,
+      ),
     );
 
     setNewTag({ ...newTag, [id]: "" });
@@ -1407,7 +1392,7 @@ function ProjectsSection({ data, onChange }) {
   const removeTag = (id, idx) =>
     onChange(
       data.map((p) =>
-        p.id === id
+        p._id === id || p.id === id
           ? {
               ...p,
               tags: p.tags.filter((_, i) => i !== idx),
@@ -1420,163 +1405,252 @@ function ProjectsSection({ data, onChange }) {
     onChange([
       ...data,
       {
-        id: Date.now(),
+        // _id: crypto.randomUUID(),
         title: "",
         description: "",
+        image: "",
         tags: [],
         github: "",
         webapp: "",
       },
     ]);
 
-  const removeProject = (id) => onChange(data.filter((p) => p.id !== id));
+  const removeProject = (id) => onChange(data.filter((p) => p._id !== id));
+
+  const inputCls =
+    "w-full rounded-2xl border border-white/10 bg-[#140d2e]/90 px-4 py-3 text-white placeholder:text-gray-500 outline-none transition-all duration-300 focus:border-[#8245ec] focus:bg-[#1a1238] focus:shadow-[0_0_0_4px_rgba(130,69,236,0.15)]";
 
   return (
     <div className="space-y-6">
-      {data?.map((proj) => (
-        <div
-          key={proj.id}
-          className="rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 p-6 backdrop-blur-xl"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-            <div>
-              <h3 className="text-xl font-bold text-white">
-                {proj.title || "New Project"}
-              </h3>
+      {data?.map((proj) => {
+        const id = proj._id || proj.id; // using _id from DB, or generated id for new projects
+        const isOpen = openProjects[id] ?? false;
 
-              <p className="text-sm text-purple-300">Portfolio Project</p>
-            </div>
+        return (
+          <div
+            key={id}
+            className="group relative overflow-hidden rounded-[30px] border border-purple-500/20 bg-[linear-gradient(145deg,rgba(15,10,36,.96),rgba(10,8,24,.96))] p-5 shadow-[0_10px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:shadow-[0_15px_60px_rgba(130,69,236,0.18)] sm:p-6"
+          >
+            {/* Glow */}
+            <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-purple-500/10 blur-3xl" />
+            <div className="absolute bottom-0 left-0 h-32 w-32 rounded-full bg-pink-500/10 blur-3xl" />
 
-            <button
-              onClick={() => removeProject(proj.id)}
-              className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition"
-            >
-              Remove
-            </button>
-          </div>
+            {/* Header */}
+            <div className="relative mb-5 flex flex-wrap items-center justify-between gap-4">
+              <div className="min-w-0">
+                <h3 className="truncate text-lg font-bold text-white sm:text-[22px]">
+                  {proj.title || "New Project"}
+                </h3>
 
-          <div className="space-y-5">
-            <div>
-              <label className="text-sm text-gray-300 block mb-2">
-                Project Title
-              </label>
+                {/* <p className="mt-1 text-sm font-medium text-purple-300">
+                  Portfolio Project
+                </p> */}
 
-              <input
-                value={proj.title}
-                onChange={(e) => update(proj.id, "title", e.target.value)}
-                className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-300 block mb-2">
-                Description
-              </label>
-
-              <textarea
-                rows={5}
-                value={proj.description}
-                onChange={(e) => update(proj.id, "description", e.target.value)}
-                className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none resize-none focus:border-purple-500"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label className="text-sm text-gray-300 block mb-2">
-                  GitHub URL
-                </label>
-
-                <input
-                  value={proj.github}
-                  onChange={(e) => update(proj.id, "github", e.target.value)}
-                  className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500"
-                />
+                <div className="mt-2 flex items-center gap-2 text-[13px] text-gray-500">
+                  <div className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+                  Project Showcase
+                </div>
               </div>
 
-              <div>
-                <label className="text-sm text-gray-300 block mb-2">
-                  Live Demo URL
-                </label>
-
-                <input
-                  value={proj.webapp}
-                  onChange={(e) => update(proj.id, "webapp", e.target.value)}
-                  className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500"
-                />
-              </div>
-            </div>
-
-            {/* Tags */}
-            <div>
-              <label className="text-sm text-gray-300 block mb-3">
-                Tech Stack
-              </label>
-
-              <div className="flex flex-wrap gap-3 mb-4">
-                {proj.tags.map((t, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm text-purple-200"
-                  >
-                    {t}
-
-                    <button
-                      onClick={() => removeTag(proj.id, i)}
-                      className="text-red-400"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input
-                  value={newTag[proj.id] || ""}
-                  placeholder="Add technology..."
-                  onChange={(e) =>
-                    setNewTag({
-                      ...newTag,
-                      [proj.id]: e.target.value,
-                    })
-                  }
-                  onKeyDown={(e) => e.key === "Enter" && addTag(proj.id)}
-                  className="flex-1 rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500"
-                />
+              {/* Buttons */}
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() => toggleProject(id)}
+                  className="rounded-xl border border-purple-500/30 bg-purple-500/5 px-4 py-2 text-sm font-medium text-purple-300 transition-all duration-300 hover:bg-purple-500/10"
+                >
+                  {isOpen ? "Close" : "Open"}
+                </button>
 
                 <button
-                  onClick={() => addTag(proj.id)}
-                  className="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-3 font-semibold text-white"
+                  onClick={() => removeProject(id)}
+                  className="rounded-xl border border-red-500/30 bg-red-500/5 px-4 py-2 text-sm font-medium text-red-400 transition-all duration-300 hover:bg-red-500/10"
                 >
-                  + Add Tag
+                  Remove
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      ))}
 
+            {isOpen && (
+              <div className="relative space-y-5">
+                {/* Image Upload */}
+                <div className="rounded-3xl border border-purple-500/15 bg-[rgba(130,69,236,0.06)] p-5 backdrop-blur-xl">
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-white">
+                      Project Media
+                    </h4>
+
+                    <p className="mt-1 text-[12px] text-gray-400">
+                      Upload project preview image or screenshot
+                    </p>
+                  </div>
+
+                  <ImageUploadBox
+                    label="Project Screenshot / Cover Image"
+                    currentUrl={proj.image}
+                    onUploaded={(url) => update(id, "image", url)}
+                    shape="square"
+                    hint="Recommended: 1280×720px (16:9 ratio)"
+                  />
+                </div>
+
+                {/* Project Title */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Project Title
+                  </label>
+
+                  <input
+                    value={proj.title}
+                    onChange={(e) => update(id, "title", e.target.value)}
+                    className={inputCls}
+                    placeholder="My Awesome Project"
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Description
+                  </label>
+
+                  <textarea
+                    rows={5}
+                    value={proj.description}
+                    onChange={(e) => update(id, "description", e.target.value)}
+                    className={`${inputCls} resize-none`}
+                    placeholder="Describe your project, features and impact..."
+                  />
+                </div>
+
+                {/* URLs */}
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      GitHub URL
+                    </label>
+
+                    <input
+                      value={proj.github}
+                      onChange={(e) => update(id, "github", e.target.value)}
+                      className={inputCls}
+                      placeholder="https://github.com/username/project"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Live Demo URL
+                    </label>
+
+                    <input
+                      value={proj.webapp}
+                      onChange={(e) => update(id, "webapp", e.target.value)}
+                      className={inputCls}
+                      placeholder="https://myproject.vercel.app"
+                    />
+                  </div>
+                </div>
+
+                {/* Tags */}
+                <div className="rounded-3xl border border-purple-500/15 bg-white/[0.02] p-5">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-semibold text-white">
+                        Tech Stack
+                      </h4>
+
+                      <p className="mt-1 text-[12px] text-gray-400">
+                        Add technologies used in this project
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-purple-500/10 px-3 py-1 text-[11px] text-purple-300">
+                      {proj.tags.length} Tags
+                    </div>
+                  </div>
+
+                  {/* Tags List */}
+                  <div className="mb-5 flex flex-wrap gap-3">
+                    {proj.tags.map((t, i) => (
+                      <div
+                        key={`${t}-${i}`}
+                        className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm text-purple-200 transition-all duration-300 hover:bg-purple-500/20"
+                      >
+                        <span>{t}</span>
+
+                        <button
+                          onClick={() => removeTag(id, i)}
+                          className="text-red-400 transition-all hover:text-red-300"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add Tag */}
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <input
+                      value={newTag[proj._id] || ""}
+                      placeholder="React JS, Node JS, MongoDB..."
+                      onChange={(e) =>
+                        setNewTag({
+                          ...newTag,
+                          [id]: e.target.value,
+                        })
+                      }
+                      onKeyDown={(e) => e.key === "Enter" && addTag(id)}
+                      className={`${inputCls} flex-1`}
+                    />
+
+                    <button
+                      onClick={() => addTag(id)}
+                      className="rounded-2xl bg-gradient-to-r from-purple-600 via-[#8245ec] to-pink-500 px-6 py-3 font-semibold text-white shadow-lg shadow-purple-900/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-purple-900/50"
+                    >
+                      + Add Tag
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {/* Add Project */}
       <button
         onClick={addProject}
-        className="w-full rounded-3xl border border-dashed border-purple-500/40 bg-purple-500/5 py-4 text-purple-300 hover:bg-purple-500/10 transition"
+        className="group relative w-full overflow-hidden rounded-[28px] border border-dashed border-purple-500/40 bg-purple-500/5 py-5 text-purple-300 transition-all duration-300 hover:border-purple-500/70 hover:bg-purple-500/10"
       >
-        + Add Project
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+        <span className="relative z-10 flex items-center justify-center gap-2 text-[15px] font-semibold">
+          ✨ + Add Project
+        </span>
       </button>
     </div>
   );
 }
-
+// ─── Education Section ────────────────────────────────────────────────────
 function EducationSection({ data, onChange }) {
+  const [openEdu, setOpenEdu] = useState({});
+
+  const toggleEdu = (id) =>
+    setOpenEdu((p) => ({
+      ...p,
+      [id]: !p[id],
+    }));
+
   const update = (id, field, val) =>
-    onChange(data.map((e) => (e.id === id ? { ...e, [field]: val } : e)));
+    onChange(data.map((e) => (e._id === id ? { ...e, [field]: val } : e)));
 
   const addEdu = () =>
     onChange([
       ...data,
       {
-        id: Date.now(),
+        _id: crypto.randomUUID(),
         school: "",
+        schoolLogo: "",
         date: "",
         grade: "",
         degree: "",
@@ -1584,94 +1658,196 @@ function EducationSection({ data, onChange }) {
       },
     ]);
 
-  const removeEdu = (id) => onChange(data.filter((e) => e.id !== id));
+  const removeEdu = (id) => onChange(data.filter((e) => e._id !== id));
+
+  const inputCls =
+    "w-full rounded-2xl border border-white/10 bg-[#140d2e]/90 px-4 py-3 text-white placeholder:text-gray-500 outline-none transition-all duration-300 focus:border-[#8245ec] focus:bg-[#1a1238] focus:shadow-[0_0_0_4px_rgba(130,69,236,0.15)]";
 
   return (
     <div className="space-y-6">
-      {data?.map((edu) => (
-        <div
-          key={edu.id}
-          className="rounded-3xl border border-purple-500/20 bg-[#0f0a24]/80 p-6 backdrop-blur-xl"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-            <div>
-              <h3 className="text-xl font-bold text-white">
-                {edu.school || "New Education"}
-              </h3>
+      {data?.map((edu) => {
+        const isOpen = openEdu[edu._id] ?? false;
+
+        return (
+          <div
+            key={edu._id}
+            className="group relative overflow-hidden rounded-[30px] border border-purple-500/20 bg-[linear-gradient(145deg,rgba(15,10,36,.96),rgba(10,8,24,.96))] p-5 shadow-[0_10px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:shadow-[0_15px_60px_rgba(130,69,236,0.18)] sm:p-6"
+          >
+            {/* Glow Effects */}
+            <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-purple-500/10 blur-3xl" />
+            <div className="absolute bottom-0 left-0 h-32 w-32 rounded-full bg-pink-500/10 blur-3xl" />
+
+            {/* Header */}
+            <div className="relative mb-5 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex min-w-0 items-center gap-4">
+                {/* Logo */}
+                {edu.schoolLogo ? (
+                  <img
+                    src={edu.schoolLogo}
+                    alt="logo"
+                    className="h-16 w-16 flex-shrink-0 rounded-2xl border border-white/10 object-cover shadow-lg"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[#140d2e] text-xs text-gray-500">
+                    Logo
+                  </div>
+                )}
+
+                {/* Info */}
+                <div className="min-w-0">
+                  <h3 className="truncate text-lg font-bold text-white sm:text-[22px]">
+                    {edu.school || "New Education"}
+                  </h3>
+
+                  <p className="mt-1 text-sm font-medium text-purple-300">
+                    {edu.degree || "Degree / Program"}
+                  </p>
+
+                  <div className="mt-2 flex items-center gap-2 text-[11px] text-gray-500">
+                    <div className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+                    Education Card
+                  </div>
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() => toggleEdu(edu._id)}
+                  className="rounded-xl border border-purple-500/30 bg-purple-500/5 px-4 py-2 text-sm font-medium text-purple-300 transition-all duration-300 hover:bg-purple-500/10"
+                >
+                  {isOpen ? "Close" : "Open"}
+                </button>
+
+                <button
+                  onClick={() => removeEdu(edu._id)}
+                  className="rounded-xl border border-red-500/30 bg-red-500/5 px-4 py-2 text-sm font-medium text-red-400 transition-all duration-300 hover:bg-red-500/10"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
 
-            <button
-              onClick={() => removeEdu(edu.id)}
-              className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition"
-            >
-              Remove
-            </button>
+            {isOpen && (
+              <div className="relative space-y-5">
+                {/* Logo Upload */}
+                <div className="rounded-3xl border border-purple-500/15 bg-[rgba(130,69,236,0.06)] p-5 backdrop-blur-xl">
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-white">
+                      Institution Branding
+                    </h4>
+
+                    <p className="mt-1 text-[12px] text-gray-400">
+                      Upload institution logo for better presentation
+                    </p>
+                  </div>
+
+                  <ImageUploadBox
+                    label="School / Institution Logo"
+                    currentUrl={edu.schoolLogo}
+                    onUploaded={(url) => update(edu._id, "schoolLogo", url)}
+                    shape="circle"
+                    hint="PNG/JPG square recommended"
+                  />
+                </div>
+
+                {/* Institution Name */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Institution Name
+                  </label>
+
+                  <input
+                    value={edu.school}
+                    onChange={(e) => update(edu._id, "school", e.target.value)}
+                    placeholder="Ajay Binay Institute of Technology"
+                    className={inputCls}
+                  />
+                </div>
+
+                {/* Date + Grade */}
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Date Range
+                    </label>
+
+                    <input
+                      value={edu.date}
+                      onChange={(e) => update(edu._id, "date", e.target.value)}
+                      placeholder="Oct 2022 - Present"
+                      className={inputCls}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Grade / CGPA
+                    </label>
+
+                    <input
+                      value={edu.grade}
+                      onChange={(e) => update(edu._id, "grade", e.target.value)}
+                      placeholder="8.95 CGPA"
+                      className={inputCls}
+                    />
+                  </div>
+                </div>
+
+                {/* Degree */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Degree / Program
+                  </label>
+
+                  <input
+                    value={edu.degree}
+                    onChange={(e) => update(edu._id, "degree", e.target.value)}
+                    placeholder="B.Tech Computer Science"
+                    className={inputCls}
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Description
+                  </label>
+
+                  <textarea
+                    rows={4}
+                    value={edu.desc}
+                    onChange={(e) => update(edu._id, "desc", e.target.value)}
+                    placeholder="Describe your academic journey, achievements, activities..."
+                    className={`${inputCls} resize-none`}
+                  />
+                </div>
+              </div>
+            )}
           </div>
+        );
+      })}
 
-          <div className="space-y-5">
-            <input
-              value={edu.school}
-              placeholder="Institution Name"
-              onChange={(e) => update(edu.id, "school", e.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none"
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <input
-                value={edu.date}
-                placeholder="Oct 2022 - Present"
-                onChange={(e) => update(edu.id, "date", e.target.value)}
-                className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none"
-              />
-
-              <input
-                value={edu.grade}
-                placeholder="8.95 CGPA"
-                onChange={(e) => update(edu.id, "grade", e.target.value)}
-                className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none"
-              />
-            </div>
-
-            <input
-              value={edu.degree}
-              placeholder="Degree / Program"
-              onChange={(e) => update(edu.id, "degree", e.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none"
-            />
-
-            <textarea
-              rows={4}
-              value={edu.desc}
-              placeholder="Description..."
-              onChange={(e) => update(edu.id, "desc", e.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none resize-none"
-            />
-          </div>
-        </div>
-      ))}
-
+      {/* Add Education */}
       <button
         onClick={addEdu}
-        className="w-full rounded-3xl border border-dashed border-purple-500/40 bg-purple-500/5 py-4 text-purple-300 hover:bg-purple-500/10 transition"
+        className="group relative w-full overflow-hidden rounded-[28px] border border-dashed border-purple-500/40 bg-purple-500/5 py-5 text-purple-300 transition-all duration-300 hover:border-purple-500/70 hover:bg-purple-500/10"
       >
-        + Add Education
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+        <span className="relative z-10 flex items-center justify-center gap-2 text-[15px] font-semibold">
+          ✨ + Add Education
+        </span>
       </button>
     </div>
   );
 }
 
+// ─── Contact Section ──────────────────────────────────────────────────────
 function ContactSection({ data, onChange }) {
   const fields = [
-    {
-      key: "email",
-      label: "Email",
-      placeholder: "you@example.com",
-    },
-    {
-      key: "phone",
-      label: "Phone",
-      placeholder: "+91 9876543210",
-    },
+    { key: "email", label: "Email", placeholder: "you@example.com" },
+    { key: "phone", label: "Phone", placeholder: "+91 9876543210" },
     {
       key: "github",
       label: "GitHub",
@@ -1688,9 +1864,8 @@ function ContactSection({ data, onChange }) {
       placeholder: "https://twitter.com/username",
     },
   ];
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
       {fields?.map((f) => (
         <div
           key={f.key}
@@ -1699,16 +1874,10 @@ function ContactSection({ data, onChange }) {
           <label className="text-sm text-purple-300 block mb-3">
             {f.label}
           </label>
-
           <input
             value={data?.[f.key] || ""}
             placeholder={f.placeholder}
-            onChange={(e) =>
-              onChange({
-                ...data,
-                [f.key]: e.target.value,
-              })
-            }
+            onChange={(e) => onChange({ ...data, [f.key]: e.target.value })}
             className="w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition"
           />
         </div>
@@ -1717,346 +1886,244 @@ function ContactSection({ data, onChange }) {
   );
 }
 
+// ─── Main Admin Shell ─────────────────────────────────────────────────────
 export default function PortfolioAdmin({ initialData: dbData }) {
   const [active, setActive] = useState("Hero");
   const [data, setData] = useState(dbData || initialData);
   const [toast, setToast] = useState(null);
-  const [exported, setExported] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const sideBarRef = useRef(null);
 
   const showToast = (msg) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 5000);
+    setTimeout(() => setToast(null), 4000);
   };
 
-  // BAAD MEIN (ye karo):
   const handleSave = async () => {
+    setSaving(true);
     try {
       await savePortfolio(data);
-      showToast("✓ Changes saved to database!");
+      showToast("✓ Saved to database!");
     } catch (err) {
       console.error("Save failed:", err);
       showToast("❌ Save failed! Check console.");
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleExport = () => {
-    const json = JSON.stringify(data, null, 2);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sideBarRef.current && !sideBarRef.current.contains(event.target)) {
+        setSidebarOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [sideBarRef]);
 
-    const blob = new Blob([json], {
-      type: "application/json",
-    });
+  /* Logout */
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
 
-    const url = URL.createObjectURL(blob);
+    showToast("Logged out successfully");
 
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = "portfolio-data.json";
-
-    a.click();
-
-    URL.revokeObjectURL(url);
-
-    setExported(true);
-
-    showToast("portfolio-data.json downloaded!");
+    setTimeout(() => {
+      window.location.reload();
+    }, 800);
   };
 
-  const navItems = SECTIONS.map((s) => ({
-    label: s,
-    icon: ICON[s.toLowerCase()],
-    key: s,
-  }));
-
-  const sectionKey = active.toLowerCase();
-
-  const completionStats = [
-    {
-      label: "Roles",
-      val: data.hero?.roles?.length,
-    },
-    {
-      label: "Skills",
-      val: data?.skills?.length,
-    },
-    {
-      label: "Experience",
-      val: data?.experience?.length,
-    },
-    {
-      label: "Projects",
-      val: data?.projects?.length,
-    },
-    {
-      label: "Education",
-      val: data?.education?.length,
-    },
+  const stats = [
+    { label: "Roles", val: data.hero?.roles?.length ?? 0 },
+    { label: "Skill cats", val: data?.skills?.length ?? 0 },
+    { label: "Experience", val: data?.experience?.length ?? 0 },
+    { label: "Projects", val: data?.projects?.length ?? 0 },
+    { label: "Education", val: data?.education?.length ?? 0 },
   ];
 
   return (
     <div className="min-h-screen bg-[#050414] text-white relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-[-120px] left-[-120px] w-[350px] h-[350px] bg-purple-600/20 blur-[120px] rounded-full" />
+      <div className="absolute top-[-120px] left-[-120px] w-[350px] h-[350px] bg-purple-600/20 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-100px] right-[-100px] w-[350px] h-[350px] bg-pink-500/20 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="absolute bottom-[-100px] right-[-100px] w-[350px] h-[350px] bg-pink-500/20 blur-[120px] rounded-full" />
-
-      {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60  lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      <div className="flex relative z-10">
+      <div className="relative z-10 flex">
         {/* Sidebar */}
         <aside
-          className={`
-          fixed lg:static top-0 left-0 h-screen w-[270px]
-          bg-white/5 backdrop-blur-2xl
-          border-r border-white/10
-          z-50
-          p-5
-          transition-all duration-300
-          ${
+            ref={sideBarRef}
+          className={`fixed lg:static top-0 left-0 h-screen w-[240px] bg-white/5 backdrop-blur-2xl border-r border-white/10 z-60 p-5 flex flex-col transition-transform duration-300 ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-          }
-        `}
+          }`}
         >
-          {/* Logo */}
           <div className="mb-10">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
               Portfolio CMS
             </h1>
-
-            <p className="text-gray-400 text-sm mt-2">Manage your portfolio</p>
+            <p className="text-gray-400 text-sm mt-1">Admin Panel</p>
           </div>
-
-          {/* Navigation */}
-          <div className="flex flex-col gap-2">
-            {navItems.map((n) => (
+          <nav className="flex flex-col gap-2 flex-1">
+            {SECTIONS.map((s) => (
               <button
-                key={n.key}
+                key={s}
                 onClick={() => {
-                  setActive(n.key);
+                  setActive(s);
                   setSidebarOpen(false);
                 }}
-                className={`
-                  flex items-center gap-3
-                  px-4 py-3 rounded-xl
-                  transition-all duration-300
-                  ${
-                    active === n.key
-                      ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg shadow-purple-500/20"
-                      : "hover:bg-white/5 text-gray-300"
-                  }
-                `}
+                className={`flex items-center z-80 gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left w-full ${active === s ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg shadow-purple-500/20" : "hover:bg-white/5 text-gray-300"}`}
               >
-                <span>{n.icon}</span>
-
-                {n.label}
+                <span>{ICON[s]}</span> {s}
               </button>
             ))}
-          </div>
+          </nav>
+          {/* Mobile Bottom Area */}
+          <div className="mt-6 border-t border-white/10 pt-5">
+            <button
+              onClick={() => window.open("/", "_target")}
+              className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 px-4 py-3 text-sm font-semibold text-purple-300 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:from-purple-500/20 hover:to-pink-500/20 hover:text-white"
+            >
+             
+              <span className="relative z-10 text-base transition-transform duration-300 group-hover:scale-110">
+                👁
+              </span>
 
-          {/* Export Notice */}
-          {exported && (
-            <div className="mt-10 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-gray-300 leading-6">
-              📄 Import{" "}
-              <code className="text-purple-400">portfolio-data.json</code> into
-              your constants.js file.
-            </div>
-          )}
+              {/* Text */}
+              <span className="relative z-10">Preview Portfolio</span>
+            </button>
+          </div>
+          <div className=" border-white/10 pt-5">
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center justify-center gap-3 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-400 transition-all duration-300 hover:bg-red-500/20 hover:text-red-300"
+            >
+              <span>↩</span>
+              Logout
+            </button>
+          </div>
         </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 lg:ml-0 p-4 sm:p-6 lg:p-8">
-          {/* Mobile Header */}
-          <div className="flex items-center justify-between lg:hidden mb-6">
+        {/* Main */}
+        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8">
+          {/* Mobile topbar */}
+          <div className="flex items-center justify-between lg:hidden mb-5">
             <button
-              onClick={() => setSidebarOpen(true)}
-              className="bg-white/10 border border-white/10 rounded-xl px-4 py-2"
+              onClick={() =>{
+                
+                 setSidebarOpen(true)
+                }}
+              className="bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-lg"
             >
               ☰
             </button>
-
-            <h2 className="text-lg font-semibold">Portfolio Admin</h2>
+            <span className="font-semibold text-sm">{active}</span>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="bg-gradient-to-r from-purple-600 to-pink-500 px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-60"
+            >
+              {saving ? "Saving..." : "💾 Save"}
+            </button>
           </div>
 
-          {/* Header */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+          {/* Desktop header */}
+          <div className="hidden lg:flex items-center justify-between gap-5 mb-8">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold">
-                {active} Section
-              </h2>
-
-              <p className="text-gray-400 mt-2 text-sm sm:text-base">
-                Manage your portfolio content professionally
+              <h2 className="text-3xl font-bold">{active} Section</h2>
+              <p className="text-gray-400 mt-1 text-sm">
+                Manage your {active.toLowerCase()} content
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={handleExport}
-                className="
-                  px-5 py-3 rounded-xl
-                  border border-white/10
-                  bg-white/5
-                  hover:bg-white/10
-                  transition
-                "
-              >
-                ⬇ Export JSON
-              </button>
-
-              <button
-                onClick={handleSave}
-                className="
-                  px-5 py-3 rounded-xl
-                  bg-gradient-to-r from-purple-600 to-pink-500
-                  hover:scale-105
-                  transition-all
-                  shadow-lg shadow-purple-500/20
-                "
-              >
-                {ICON.save} Save Changes
-              </button>
-            </div>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 hover:scale-105 transition-all shadow-lg shadow-purple-500/20 font-semibold disabled:opacity-60"
+            >
+              {saving ? "Saving..." : "💾 Save Changes"}
+            </button>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
-            {completionStats?.map((s) => (
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-7">
+            {stats.map((s) => (
               <div
                 key={s.label}
-                className="
-                  bg-white/5
-                  border border-white/10
-                  rounded-2xl
-                  p-5
-                  backdrop-blur-xl
-                "
+                className="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-xl text-center"
               >
-                <h3 className="text-3xl font-bold text-purple-400">{s.val}</h3>
-
-                <p className="text-gray-400 mt-2 text-sm">{s.label}</p>
+                <div className="text-2xl font-bold text-purple-400">
+                  {s.val}
+                </div>
+                <div className="text-gray-400 text-xs mt-1">{s.label}</div>
               </div>
             ))}
           </div>
 
-          {/* Content Panel */}
-          <div
-            className="
-              bg-white/5
-              border border-white/10
-              rounded-3xl
-              p-4 sm:p-6 lg:p-8
-              backdrop-blur-xl
-              shadow-2xl
-            "
-          >
-            {/* Section Header */}
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-center text-lg">
-                {ICON[sectionKey]}
+          {/* Content panel */}
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-4 sm:p-6 lg:p-8 backdrop-blur-xl shadow-2xl">
+            <div className="flex items-center gap-3 mb-7">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-center text-lg flex-shrink-0">
+                {ICON[active]}
               </div>
-
               <div>
-                <h3 className="text-2xl font-semibold">{active}</h3>
-
+                <h3 className="text-xl font-semibold">{active}</h3>
                 <p className="text-sm text-gray-400">
                   Update your {active.toLowerCase()} section
                 </p>
               </div>
             </div>
 
-            {/* Sections */}
             {active === "Hero" && (
               <HeroSection
                 data={data?.hero}
-                onChange={(v) =>
-                  setData({
-                    ...data,
-                    hero: v,
-                  })
-                }
+                onChange={(v) => setData({ ...data, hero: v })}
               />
             )}
-
             {active === "Skills" && (
               <SkillsSection
                 data={data?.skills}
-                onChange={(v) =>
-                  setData({
-                    ...data,
-                    skills: v,
-                  })
-                }
+                onChange={(v) => setData({ ...data, skills: v })}
               />
             )}
-
             {active === "Experience" && (
               <ExperienceSection
                 data={data?.experience}
-                onChange={(v) =>
-                  setData({
-                    ...data,
-                    experience: v,
-                  })
-                }
+                onChange={(v) => setData({ ...data, experience: v })}
               />
             )}
-
             {active === "Projects" && (
               <ProjectsSection
                 data={data?.projects}
-                onChange={(v) =>
-                  setData({
-                    ...data,
-                    projects: v,
-                  })
-                }
+                onChange={(v) => setData({ ...data, projects: v })}
               />
             )}
-
             {active === "Education" && (
               <EducationSection
                 data={data?.education}
-                onChange={(v) =>
-                  setData({
-                    ...data,
-                    education: v,
-                  })
-                }
+                onChange={(v) => setData({ ...data, education: v })}
               />
             )}
-
             {active === "Contact" && (
               <ContactSection
                 data={data?.contact}
-                onChange={(v) =>
-                  setData({
-                    ...data,
-                    contact: v,
-                  })
-                }
+                onChange={(v) => setData({ ...data, contact: v })}
               />
             )}
 
-            {/* Footer */}
-            <div className="mt-10 pt-6 border-t border-white/10 flex justify-end">
+            <div className="mt-8 pt-6 border-t border-white/10 flex justify-end">
               <button
                 onClick={handleSave}
-                className="
-                  px-6 py-3 rounded-xl
-                  bg-gradient-to-r from-purple-600 to-pink-500
-                  hover:scale-105
-                  transition-all
-                  shadow-lg shadow-purple-500/20
-                "
+                disabled={saving}
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 hover:scale-105 transition-all shadow-lg shadow-purple-500/20 font-semibold disabled:opacity-60"
               >
-                {ICON.save} Save Changes
+                {saving ? "Saving..." : "💾 Save Changes"}
               </button>
             </div>
           </div>
@@ -2065,18 +2132,14 @@ export default function PortfolioAdmin({ initialData: dbData }) {
 
       {/* Toast */}
       {toast && (
-        <div
-          className="
-            fixed bottom-6 right-6
-            bg-gradient-to-r from-purple-600 to-pink-500
-            px-5 py-3
-            rounded-xl
-            shadow-2xl
-            z-[100]
-            animate-pulse
-          "
-        >
-          {toast}
+        <div className="fixed bottom-6 right-4 left-4 sm:left-auto sm:right-6 sm:max-w-xs bg-gradient-to-r from-purple-600 to-pink-500 px-5 py-3 rounded-2xl shadow-2xl z-[100] text-sm font-semibold flex items-center gap-3">
+          <span className="flex-1">{toast}</span>
+          <button
+            onClick={() => setToast(null)}
+            className="opacity-70 hover:opacity-100"
+          >
+            ✕
+          </button>
         </div>
       )}
     </div>

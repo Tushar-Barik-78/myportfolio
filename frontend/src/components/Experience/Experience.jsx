@@ -247,7 +247,7 @@
 
 import { usePortfolio } from "../../hooks/usePortfolio.jsx";
 import { experiences } from "../../constants";
-import { FiBriefcase, FiCalendar } from "react-icons/fi";
+import { FiBriefcase, FiCalendar, FiMail, FiMapPin } from "react-icons/fi";
 
 const Experience = () => {
   const { portfolio, loading } = usePortfolio();
@@ -287,7 +287,13 @@ const Experience = () => {
     );
   }
 
-  const experiences1 = portfolio?.experience || experiences;
+  const experiences1 = [...(portfolio?.experience || experiences)].sort(
+    (a, b) => {
+      const getYear = (date) =>
+        parseInt(date?.match(/\d{4}/g)?.slice(-1)[0]) || 0;
+      return getYear(b.date) - getYear(a.date); // latest year pehle
+    },
+  );
 
   return (
     <section
@@ -331,21 +337,19 @@ const Experience = () => {
                 index % 2 === 0 ? "md:justify-start" : "md:justify-end"
               }`}
             >
-             
-
               <div className="absolute sm:left-1/2 left-0 transform -translate-x-1/2 bg-gray-400 border-4 border-[#8245ec] w-12 h-12 sm:w-16 sm:h-16 rounded-full flex justify-center items-center z-10 sm:z-0 overflow-hidden">
-              {experience.companyLogo || experience.img ? (
-                <img
-                        src={experience.companyLogo || experience.img}
-                        alt={experience.company}
-                        className="w-full h-full object-cover"
-                      />
-              ) : (
-                <span className="text-white font-bold text-lg">
-                  {experience.company?.charAt(0) || "?"}
-                </span>
-              )}
-            </div>
+                {experience.companyLogo || experience.img ? (
+                  <img
+                    src={experience.companyLogo || experience.img}
+                    alt={experience.company}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white font-bold text-lg">
+                    {experience.company?.charAt(0) || "?"}
+                  </span>
+                )}
+              </div>
 
               {/* CARD */}
               <div
@@ -413,6 +417,11 @@ const Experience = () => {
 
                       <span>{experience.date}</span>
                     </div>
+                    <div className="flex items-center gap-2 text-gray-100 text-sm mt-3">
+                      <FiMapPin />
+
+                      <span>{experience.mode}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -420,6 +429,10 @@ const Experience = () => {
                 <div className="md:hidden flex items-center gap-2 text-gray-200 text-sm mb-3">
                   <FiCalendar />
                   <span>{experience.date}</span>
+                </div>
+                <div className="md:hidden flex items-center gap-2 text-gray-200 text-sm mb-3">
+                  <FiMapPin />
+                  <span>{experience.mode}</span>
                 </div>
 
                 {/* DESCRIPTION */}

@@ -68,7 +68,7 @@ export const SkillsInfo = [
       { name: "React JS", logo: reactjsLogo },
       // { name: "Angular", logo: angularLogo },
       { name: "Redux", logo: reduxLogo },
-      // { name: "Next JS", logo: nextjsLogo },
+      { name: "Next JS", logo: nextjsLogo },
       { name: "Tailwind CSS", logo: tailwindcssLogo },
       // { name: "GSAP", logo: gsapLogo },
       // { name: "Material UI", logo: materialuiLogo },
@@ -117,7 +117,7 @@ export const SkillsInfo = [
 // * Exprience section information
 export const experiences = [
   {
-    id: 0,
+    _id: 0,
     img: internPeLogo,
     role: "FullStack Developer",
     company: "Internpe",
@@ -137,7 +137,7 @@ export const experiences = [
     ],
   },
   {
-    id: 1,
+    _id: 1,
     img: cognifyzLogo,
     role: "FrontEnd Developer",
     company: "Cognifyz Limited",
@@ -153,7 +153,7 @@ export const experiences = [
     ],
   },
   {
-    id: 2,
+    _id: 2,
     img: OCAClogo,
     role: "Advance Java Intern",
     company: "OCAC Training Center",
@@ -167,7 +167,7 @@ export const experiences = [
 // * Project section information
 export const projects = [
   {
-    id: 0,
+    _id: 0,
     title: "GitHub Profile Detective",
     description:
       "A powerful and user-friendly React.js application designed to uncover and showcase detailed GitHub profile information. Simply enter a GitHub username, and the app fetches comprehensive data, including profile stats, repositories, followers, and contributions. The intuitive interface ensures a seamless experience, making it a must-visit tool for developers and recruiters.",
@@ -178,7 +178,7 @@ export const projects = [
     webapp: "https://githubprofiledetective.netlify.app/",
   },
   {
-    id: 0,
+    _id: 1,
     title: "JobQuest",
     description:
       "A full-stack job portal application that connects job seekers and recruiters on a single platform. JobQuest enables users to search and apply for jobs, track applications, and manage job postings through role-based dashboards. The platform is designed with a clean UI, secure authentication, and scalable MERN stack architecture to handle real-world hiring workflows efficiently.",
@@ -189,7 +189,7 @@ export const projects = [
     webapp: "https://jobquest-tushar.onrender.com/",
   },
   {
-    id: 1,
+    _id: 2,
     title: "CS Prep",
     description:
       "A full-stack quiz-based platform designed for GATE/UGC NET students to practice previous year questions and create customized tests. The platform offers comprehensive profile stats and detailed results, helping students track and improve their preparation journey effectively.",
@@ -207,7 +207,7 @@ export const projects = [
     webapp: "https://csprep.netlify.app/",
   },
   {
-    id: 2,
+    _id: 2,
     title: "Movie Recommendation App",
     description:
       "A React-based web application that provides movie recommendations based on different criteria, such as genres, user preferences, and popular trends. The intuitive design and smooth experience make it a go-to app for movie enthusiasts.",
@@ -217,7 +217,7 @@ export const projects = [
     webapp: "https://movie-recommendation-app-jet.vercel.app/",
   },
   {
-    id: 3,
+    _id: 3,
     title: "Email Validator NPM Package",
     description:
       "An efficient and customizable NPM package for validating email addresses. Built using React.js and Node.js, it provides robust validation features to help developers ensure that email inputs meet required formats and standards.",
@@ -227,7 +227,7 @@ export const projects = [
     webapp: "https://www.npmjs.com/package/cmtk-email-validator",
   },
   {
-    id: 4,
+    _id: 4,
     title: "Task Reminder Chrome Extension Tool",
     description:
       "A productivity-boosting Chrome extension designed to help users manage and remember their daily tasks. Built using JavaScript, it offers a simple interface with reminders and task notifications to keep users on track.",
@@ -237,7 +237,7 @@ export const projects = [
     webapp: "chrome://extensions/?id=kngheeibjnnidhfoomkpnbeghackheci",
   },
   {
-    id: 5,
+    _id: 5,
     title: "Webverse Digital",
     description:
       "The official website for Webverse Digital, a creative digital marketing agency. Built using HTML, CSS, and JavaScript, it features visually appealing animations and a clean design to showcase the agency's services.",
@@ -247,7 +247,7 @@ export const projects = [
     webapp: "https://webversedigital.com/",
   },
   {
-    id: 6,
+    _id: 6,
     title: "Coding Master",
     description:
       "An ed-tech platform where users can access tech and coding-related blogs, notes, interview questions, e-books, and premium content with payment integration. Built with full-stack technologies for a seamless learning experience.",
@@ -257,7 +257,7 @@ export const projects = [
     webapp: "https://codingmasterweb.in/",
   },
   {
-    id: 7,
+    _id: 7,
     title: "Image Search App",
     description:
       "A React.js-based image search application that allows users to search and download high-quality images from the web. Built using external APIs to ensure a vast library of results for various queries.",
@@ -267,7 +267,7 @@ export const projects = [
     webapp: "https://imagsearch.netlify.app/",
   },
   {
-    id: 8,
+    _id: 8,
     title: "Image Background Remover",
     description:
       "An efficient background removal app built with React.js and API integration. Users can upload any image, remove the background, and download the transparent version for further use.",
@@ -281,7 +281,7 @@ export const projects = [
 // * Education section information
 export const education = [
   {
-    id: 0,
+    _id: 0,
     img: abitLogo2,
     school: "Ajay Binay Institute of Tecnology, Cuttack",
     date: "Oct 2022 - Present",
@@ -290,7 +290,7 @@ export const education = [
     degree: "Bachelor in Technology - B.Tech (Computer Science)",
   },
   {
-    id: 1,
+    _id: 1,
     img: ravlogo,
     school: "Ravenshaw Higher Secondry School, Cuttack",
     date: "May 2020 - March 2022",
@@ -299,7 +299,7 @@ export const education = [
     degree: "CHSE(XII) - PCM with Computer Science",
   },
   {
-    id: 2,
+    _id: 2,
     img: ravlogo,
     school: "Ravenshaw Collegiate School, Cuttack",
     date: "Apr 2013 - March 2020",
