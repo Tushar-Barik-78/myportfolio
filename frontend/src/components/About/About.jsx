@@ -5,7 +5,7 @@ import Tilt from "react-parallax-tilt";
 import { FiArrowRight } from "react-icons/fi";
 import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
 import { usePortfolio } from "../../hooks/usePortfolio.jsx";
-import profile3 from "../../assets/profile3.png";
+import profile3 from "../../assets/Profile3.png";
 
 const About = () => {
   const { portfolio, loading } = usePortfolio();
