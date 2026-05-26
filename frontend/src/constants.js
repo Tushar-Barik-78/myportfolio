@@ -43,7 +43,7 @@ import abitLogo from "./assets/education_logo/abit_logo.png";
 import ravlogo from "./assets/education_logo/ravenshaw_logo.png";
 import abitLogo2 from "./assets/education_logo/abit2.png"
 // * Project Section Logo's
-import JobQuestLogo from "./assets/work_logo/jobquest.png";
+import JobQuestLogo from "./assets/work_logo/JobQuest.png";
 import githubdetLogo from "./assets/work_logo/github_det.png";
 import csprepLogo from "./assets/work_logo/cs_prep.png";
 import movierecLogo from "./assets/work_logo/movie_rec.png";
@@ -53,8 +53,6 @@ import webverLogo from "./assets/work_logo/web_dig.png";
 import cmLogo from "./assets/work_logo/cm.png";
 import imagesearchLogo from "./assets/work_logo/image_search.png";
 import removebgLogo from "./assets/work_logo/remove_bg.png";
-// import { useEffect, useState } from "react";
-// import { getPortfolio } from "../../api";
 
 // * Skill section information
 export const SkillsInfo = [
