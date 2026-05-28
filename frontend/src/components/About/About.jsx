@@ -135,15 +135,15 @@ const About = () => {
             {[
               {
                 icon: <FaGithub />,
-                link: "#",
+                link: "https://github.com/Tushar-Barik-78",
               },
               {
                 icon: <FaLinkedin />,
-                link: "#",
+                link: "https://www.linkedin.com/in/tushar-barik/",
               },
               {
                 icon: <FaInstagram />,
-                link: "#",
+                link: "https://www.instagram.com/tushar_barik_06/",
               },
             ].map((item, index) => (
               <a
@@ -190,7 +190,7 @@ const About = () => {
 
               <div>
                 <h4 className="text-white text-sm font-semibold">
-                  2+ Years
+                  1+ Years
                 </h4>
 
                 <p className="text-gray-400 text-xs">

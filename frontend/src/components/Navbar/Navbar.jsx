@@ -131,15 +131,15 @@ const Navbar = () => {
             {[
               {
                 icon: <FaGithub />,
-                link: "https://github.com/",
+                link: "https://github.com/Tushar-Barik-78",
               },
               {
                 icon: <FaLinkedin />,
-                link: "https://linkedin.com/",
+                link: "https://www.linkedin.com/in/tushar-barik/",
               },
               {
                 icon: <FaInstagram />,
-                link: "https://instagram.com/",
+                link: "https://www.instagram.com/tushar_barik_06/",
               },
             ].map((item, index) => (
               <a
