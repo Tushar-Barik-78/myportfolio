@@ -9,12 +9,7 @@ import { useState, useEffect, createContext, useContext } from "react";
 import { getPortfolio } from "../api";
 
 // ── constants.js se fallback data import karo ──────────────────────────────
-import {
-  SkillsInfo,
-  experiences,
-  projects,
-  education,
-} from "../constants";
+import { SkillsInfo, experiences, projects, education } from "../constants";
 
 // Hero ka fallback (constants.js mein hero nahi hai, isliye yahan likhte hain)
 const FALLBACK_HERO = {
@@ -22,7 +17,8 @@ const FALLBACK_HERO = {
   greeting: "Hii, I am",
   roles: ["Fullstack Developer", "App Developer", "Coder", "Problem Solver"],
   bio: "I am a full-stack developer with over 2 years of experience in building scalable web applications. Skilled in both front-end and back-end development, I specialize in the MERN stack and other modern technologies to create seamless user experiences and efficient solutions.",
-  resumeUrl: "https://drive.google.com/file/d/1cFqxcrKFJfnJXrJXmE9HnmO18bdVKJl2/view",
+  resumeUrl:
+    "https://drive.google.com/file/d/1cFqxcrKFJfnJXrJXmE9HnmO18bdVKJl2/view",
   profileImage: null, // local Profile3.png component mein handle karega
 };
 
@@ -42,17 +38,13 @@ const isFilled = {
     data?.hero &&
     (data.hero.name || data.hero.bio || data.hero.roles?.length > 0),
 
-  skills: (data) =>
-    data?.skills && data.skills.length > 0,
+  skills: (data) => data?.skills && data.skills.length > 0,
 
-  experience: (data) =>
-    data?.experience && data.experience.length > 0,
+  experience: (data) => data?.experience && data.experience.length > 0,
 
-  projects: (data) =>
-    data?.projects && data.projects.length > 0,
+  projects: (data) => data?.projects && data.projects.length > 0,
 
-  education: (data) =>
-    data?.education && data.education.length > 0,
+  education: (data) => data?.education && data.education.length > 0,
 
   contact: (data) =>
     data?.contact &&
@@ -65,46 +57,34 @@ const isFilled = {
 const mergeWithFallback = (dbData) => {
   return {
     // HERO: DB filled hai? DB use karo, nahi to fallback
-    hero: isFilled.hero(dbData)
-      ? dbData.hero
-      : FALLBACK_HERO,
+    hero: isFilled.hero(dbData) ? dbData.hero : FALLBACK_HERO,
 
     // SKILLS: DB filled hai? DB use karo, nahi to constants.js ka SkillsInfo
-    skills: isFilled.skills(dbData)
-      ? dbData.skills
-      : SkillsInfo,
+    skills: isFilled.skills(dbData) ? dbData.skills : SkillsInfo,
     // Note: constants.js mein skills = [{ name, logo (local img) }]
     //       DB mein skills = [{ name, logo (cloudinary URL) }]
     //       dono format same hain, isliye kaam karega
 
     // EXPERIENCE: DB filled hai? DB use karo, nahi to constants.js ka experiences
-    experience: isFilled.experience(dbData)
-      ? dbData.experience
-      : experiences,
+    experience: isFilled.experience(dbData) ? dbData.experience : experiences,
 
     // PROJECTS: DB filled hai? DB use karo, nahi to constants.js ka projects
-    projects: isFilled.projects(dbData)
-      ? dbData.projects
-      : projects,
+    projects: isFilled.projects(dbData) ? dbData.projects : projects,
 
     // EDUCATION: DB filled hai? DB use karo, nahi to constants.js ka education
-    education: isFilled.education(dbData)
-      ? dbData.education
-      : education,
+    education: isFilled.education(dbData) ? dbData.education : education,
 
     // CONTACT: DB filled hai? DB use karo, nahi to fallback
-    contact: isFilled.contact(dbData)
-      ? dbData.contact
-      : FALLBACK_CONTACT,
+    contact: isFilled.contact(dbData) ? dbData.contact : FALLBACK_CONTACT,
 
     // source track karo — debug ke liye useful
     _source: {
-      hero:       isFilled.hero(dbData)       ? "db" : "constants",
-      skills:     isFilled.skills(dbData)     ? "db" : "constants",
+      hero: isFilled.hero(dbData) ? "db" : "constants",
+      skills: isFilled.skills(dbData) ? "db" : "constants",
       experience: isFilled.experience(dbData) ? "db" : "constants",
-      projects:   isFilled.projects(dbData)   ? "db" : "constants",
-      education:  isFilled.education(dbData)  ? "db" : "constants",
-      contact:    isFilled.contact(dbData)    ? "db" : "constants",
+      projects: isFilled.projects(dbData) ? "db" : "constants",
+      education: isFilled.education(dbData) ? "db" : "constants",
+      contact: isFilled.contact(dbData) ? "db" : "constants",
     },
   };
 };
@@ -121,16 +101,23 @@ export const PortfolioProvider = ({ children }) => {
 
   // apiStatus: "loading" | "success" | "fallback"
   const [apiStatus, setApiStatus] = useState("loading");
+  const [isWakingUp, setIsWakingUp] = useState(false);
+
+  // clearTimeout mein slowTimer bhi clear karo
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // 5 second timeout — agar backend slow hai to constants pe fall back karo
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 5000);
+        // fetchData mein, timeout ke saath:
+        const slowTimer = setTimeout(() => setIsWakingUp(true), 3000); // 3s baad "waking up" dikhao
+        const timeout = setTimeout(() => controller.abort(), 20000);
 
         const response = await getPortfolio({ signal: controller.signal });
         clearTimeout(timeout);
+        clearTimeout(slowTimer);
+        setIsWakingUp(false);
 
         const dbData = response.data;
         const merged = mergeWithFallback(dbData);
@@ -144,7 +131,10 @@ export const PortfolioProvider = ({ children }) => {
         }
       } catch (err) {
         // Net nahi hai / backend band hai / timeout — constants.js se poora data lo
-        console.warn("⚠️ API unavailable, using constants.js fallback:", err.message);
+        console.warn(
+          "⚠️ API unavailable, using constants.js fallback:",
+          err.message,
+        );
 
         setPortfolio(mergeWithFallback(null)); // null denge to har section fallback lega
         setApiStatus("fallback");
