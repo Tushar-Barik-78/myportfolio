@@ -247,8 +247,8 @@ export const PortfolioProvider = ({ children }) => {
       // 4 sec baad "waking up" banner dikhao — backend Render pe soya hua hai
       const wakeTimer   = setTimeout(() => setIsWakingUp(true), 4000);
 
-      // 25 sec mein bhi response nahi aaya → give up, constants use karo
-      const abortTimer  = setTimeout(() => controller.abort(), 25000);
+      // 10 sec mein bhi response nahi aaya → give up, constants use karo
+      const abortTimer  = setTimeout(() => controller.abort(), 10000);
 
       try {
         const response = await getPortfolio({ signal: controller.signal });
