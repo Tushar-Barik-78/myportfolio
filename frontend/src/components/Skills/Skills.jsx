@@ -2,7 +2,6 @@
 
 import Tilt from "react-parallax-tilt";
 import { usePortfolio } from "../../hooks/usePortfolio.jsx";
-import { SkillsInfo } from "../../constants";
 
 import { FiCode, FiLayers } from "react-icons/fi";
 
@@ -43,8 +42,8 @@ const Skills = () => {
     );
   }
 
-  // DB Skills or Fallback Skills
-  const skillsData = portfolio?.skills || SkillsInfo;
+  // DB Skills only — no constants fallback
+  const skillsData = portfolio?.skills || [];
 
   return (
     <section
@@ -127,28 +126,13 @@ const Skills = () => {
                 <div className=" z-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
                   {skills.map((curSkill, index) => (
                     <div
-                      key={curSkill.name}
-                      className="group/skill relative flex gap-2 items-center justify-center text-center rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl py-2 px-3 transition-all duration-300 hover:border-purple-500/30 hover:bg-purple-500/10 hover:-translate-y-1"
+                      key={curSkill.name || index}
+                      className="group/skill relative flex items-center justify-center text-center rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl py-2 px-3 transition-all duration-300 hover:border-purple-500/30 hover:bg-purple-500/10 hover:-translate-y-1"
                       style={{
                         animationDelay: `${index * 100}ms`,
                       }}
                     >
-                      {/* Logo */}
-                      {/* <div className="w-14 h-14 rounded-2xl bg-[#1b1333] border border-white/10 flex items-center justify-center mb-4 overflow-hidden group-hover/skill:scale-110 transition duration-300"> */}
-                        {curSkill.logo ? (
-                          <img
-                            src={curSkill.logo}
-                            alt={`${curSkill.name} logo`}
-                            className="w-7 h-7 object-contain"
-                          />
-                        ) : (
-                          <span className="text-white text-xl font-bold">
-                            {curSkill.name?.charAt(0)}
-                          </span>
-                        )}
-                      {/* </div> */}
-
-                      {/* Name */}
+                      {/* Name only - no logo */}
                       <span className="text-sm sm:text-[15px] text-gray-300 font-medium group-hover/skill:text-white transition">
                         {curSkill.name}
                       </span>

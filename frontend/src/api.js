@@ -1,7 +1,7 @@
 // src/api.js
 import axios from "axios";
 
-const API = axios.create({ baseURL: "https://myportfolio-zqex.onrender.com/api" });
+const API = axios.create({ baseURL: import.meta.env.VITE_API_URL || "https://myportfolio-zqex.onrender.com/api" });
 
 // Har request mein automatically JWT token attach ho jata hai
 API.interceptors.request.use((req) => {
@@ -21,3 +21,6 @@ export const uploadImage = (file) => {
   form.append("image", file);
   return API.post("/portfolio/upload", form);
 };
+
+export const getCodingStats  = ()     => API.get("/stats");
+export const saveCodingStats = (data) => API.put("/stats", data);

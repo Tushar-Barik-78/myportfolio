@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { savePortfolio, uploadImage } from "../api";
-
+// FIND: import { savePortfolio, uploadImage } from "../api";
+// CHANGE TO:
+import { savePortfolio, uploadImage, saveCodingStats } from "../api";
 const SECTIONS = [
   "Hero",
   "Skills",
@@ -8,6 +9,7 @@ const SECTIONS = [
   "Projects",
   "Education",
   "Contact",
+  "Stats",
 ];
 
 const initialData = {
@@ -72,6 +74,17 @@ const initialData = {
     },
   ],
   contact: { email: "", phone: "", github: "", linkedin: "", twitter: "" },
+  codingStats: {
+    usernames: { leetcode: "", gfg: "", github: "", hackerrank: "", codechef: "" },
+    manual: {
+      leetcode:   { totalSolved: 0, easySolved: 0, mediumSolved: 0, hardSolved: 0, rating: 0, attended: 0 },
+      gfg:        { totalSolved: 0, easy: 0, medium: 0, hard: 0, score: 0, streak: 0, maxStreak: 0 },
+      github:     { publicRepos: 0, totalStars: 0, followers: 0 },
+      hackerrank: { stars: 0, badges: 0 },
+      codechef:   { rating: 0, stars: "" },
+    },
+  },
+
 };
 
 const ICON = {
@@ -81,6 +94,7 @@ const ICON = {
   Projects: "🚀",
   Education: "🎓",
   Contact: "📬",
+  Stats: "📊",
 };
 
 // ─── Reusable Image Upload Box ────────────────────────────────────────────
@@ -551,7 +565,7 @@ function HeroSection({ data, onChange }) {
 function SkillsSection({ data, onChange }) {
   const [newSkillName, setNewSkillName] = useState({});
   const [newSkillLogo, setNewSkillLogo] = useState({}); // { catId: "cloudinary_url" }
-  const [logoUploading, setLogoUploading] = useState({}); // { catId: true/false }
+  // const [logoUploading, setLogoUploading] = useState({}); // { catId: true/false }
   const [openSections, setOpenSections] = useState(
     data?.reduce((a, c) => {
       a[c.id] = true;
@@ -1904,6 +1918,7 @@ export default function PortfolioAdmin({ initialData: dbData }) {
     setSaving(true);
     try {
       await savePortfolio(data);
+      if (data.codingStats) await saveCodingStats(data.codingStats);
       showToast("✓ Saved to database!");
     } catch (err) {
       console.error("Save failed:", err);
@@ -2116,6 +2131,128 @@ export default function PortfolioAdmin({ initialData: dbData }) {
                 onChange={(v) => setData({ ...data, contact: v })}
               />
             )}
+            {active === "Stats" && (
+  <div className="space-y-8">
+    {/* Usernames */}
+    <div>
+      <h3 className="text-white font-semibold mb-4">Platform Usernames</h3>
+      <p className="text-xs text-gray-500 mb-4">These are used to auto-fetch live stats from APIs.</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {["leetcode","gfg","github","hackerrank","codechef"].map((platform) => (
+          <div key={platform}>
+            <label className="block text-xs text-gray-400 mb-1 capitalize">{platform} username</label>
+            <input
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-purple-500/50"
+              value={data.codingStats?.usernames?.[platform] || ""}
+              onChange={(e) => setData((prev) => ({
+                ...prev,
+                codingStats: { ...prev.codingStats, usernames: { ...prev.codingStats?.usernames, [platform]: e.target.value } }
+              }))}
+              placeholder={`your ${platform} username`}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Manual Overrides */}
+    <div>
+      <h3 className="text-white font-semibold mb-1">Manual Overrides</h3>
+      <p className="text-xs text-gray-500 mb-4">Used as fallback if live API fails.</p>
+
+      {/* LeetCode */}
+      <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">LeetCode</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+        {[["totalSolved","Total"],["easySolved","Easy"],["mediumSolved","Medium"],["hardSolved","Hard"],["rating","Rating"],["attended","Contests"]].map(([key,label]) => (
+          <div key={key}>
+            <label className="block text-[10px] text-gray-500 mb-1">{label}</label>
+            <input type="number"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+              value={data.codingStats?.manual?.leetcode?.[key] || ""}
+              onChange={(e) => setData((prev) => ({
+                ...prev,
+                codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
+                  leetcode: { ...prev.codingStats?.manual?.leetcode, [key]: Number(e.target.value) }
+                }}
+              }))}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* GFG */}
+      <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">GeeksForGeeks</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+        {[["totalSolved","Total"],["easy","Easy"],["medium","Medium"],["hard","Hard"],["score","Score"],["streak","Streak"],["maxStreak","Max Streak"]].map(([key,label]) => (
+          <div key={key}>
+            <label className="block text-[10px] text-gray-500 mb-1">{label}</label>
+            <input type="number"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+              value={data.codingStats?.manual?.gfg?.[key] || ""}
+              onChange={(e) => setData((prev) => ({
+                ...prev,
+                codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
+                  gfg: { ...prev.codingStats?.manual?.gfg, [key]: Number(e.target.value) }
+                }}
+              }))}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* HackerRank */}
+      <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">HackerRank</p>
+      <div className="grid grid-cols-2 gap-3 mb-5">
+        {[["stars","Stars"],["badges","Badges"]].map(([key,label]) => (
+          <div key={key}>
+            <label className="block text-[10px] text-gray-500 mb-1">{label}</label>
+            <input type="number"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+              value={data.codingStats?.manual?.hackerrank?.[key] || ""}
+              onChange={(e) => setData((prev) => ({
+                ...prev,
+                codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
+                  hackerrank: { ...prev.codingStats?.manual?.hackerrank, [key]: Number(e.target.value) }
+                }}
+              }))}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* CodeChef */}
+      <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">CodeChef</p>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-[10px] text-gray-500 mb-1">Rating</label>
+          <input type="number"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+            value={data.codingStats?.manual?.codechef?.rating || ""}
+            onChange={(e) => setData((prev) => ({
+              ...prev,
+              codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
+                codechef: { ...prev.codingStats?.manual?.codechef, rating: Number(e.target.value) }
+              }}
+            }))}
+          />
+        </div>
+        <div>
+          <label className="block text-[10px] text-gray-500 mb-1">Stars (e.g. ★★★)</label>
+          <input
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+            value={data.codingStats?.manual?.codechef?.stars || ""}
+            onChange={(e) => setData((prev) => ({
+              ...prev,
+              codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
+                codechef: { ...prev.codingStats?.manual?.codechef, stars: e.target.value }
+              }}
+            }))}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
             <div className="mt-8 pt-6 border-t border-white/10 flex justify-end">
               <button

@@ -66,6 +66,8 @@ import Education  from "./components/Education/Education";
 import Contact    from "./components/Contact/Contact";
 import Footer     from "./components/Footer/Footer";
 import BlurBlob   from "./BlurBlob";
+import CodingStats from "./components/CodingStats/CodingStats";
+
 
 import AdminApp from "./admin/AdminApp";
 
@@ -98,6 +100,7 @@ const Portfolio = () => {
         <Skills />
         <Experience />
         <Works />
+        <CodingStats />
         <Education />
         <Contact />
         <Footer />

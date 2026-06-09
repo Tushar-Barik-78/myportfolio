@@ -171,7 +171,6 @@ import { getPortfolio } from "../api";
 
 // ── constants.js se fallback data import karo ──────────────────────────────
 import {
-  SkillsInfo,
   experiences,
   projects,
   education,
@@ -214,14 +213,15 @@ const isFilled = {
 const mergeWithFallback = (dbData) => {
   return {
     hero:       isFilled.hero(dbData)       ? dbData.hero       : FALLBACK_HERO,
-    skills:     isFilled.skills(dbData)     ? dbData.skills     : SkillsInfo,
+    // Skills: ONLY from DB — no constants fallback (fast load, no logo images)
+    skills:     isFilled.skills(dbData)     ? dbData.skills     : [],
     experience: isFilled.experience(dbData) ? dbData.experience : experiences,
     projects:   isFilled.projects(dbData)   ? dbData.projects   : projects,
     education:  isFilled.education(dbData)  ? dbData.education  : education,
     contact:    isFilled.contact(dbData)    ? dbData.contact    : FALLBACK_CONTACT,
     _source: {
       hero:       isFilled.hero(dbData)       ? "db" : "constants",
-      skills:     isFilled.skills(dbData)     ? "db" : "constants",
+      skills:     isFilled.skills(dbData)     ? "db" : "empty",
       experience: isFilled.experience(dbData) ? "db" : "constants",
       projects:   isFilled.projects(dbData)   ? "db" : "constants",
       education:  isFilled.education(dbData)  ? "db" : "constants",
