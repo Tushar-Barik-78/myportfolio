@@ -8,4 +8,15 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separate React and ReactDOM into a vendor chunk
+          vendor: ['react', 'react-dom'],
+          icons: ['react-icons'] // Separate react-icons/fi into its own chunk
+        }
+      }
+    }
+  }
 })

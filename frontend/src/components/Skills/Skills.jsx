@@ -2,7 +2,6 @@
 
 import Tilt from "react-parallax-tilt";
 import { usePortfolio } from "../../hooks/usePortfolio.jsx";
-
 import { FiCode, FiLayers } from "react-icons/fi";
 
 const Skills = () => {

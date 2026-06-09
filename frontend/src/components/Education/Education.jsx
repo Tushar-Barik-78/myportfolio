@@ -1,7 +1,6 @@
 import React from "react";
 // src/components/Education/Education.jsx
 import { usePortfolio } from "../../hooks/usePortfolio.jsx";
-import { education, experiences } from "../../constants";
 
 const Education = () => {
   const { portfolio, loading } = usePortfolio();
@@ -36,7 +35,7 @@ const Education = () => {
 
   // DB se education array lo
   // Structure: [{ school, schoolLogo, date, grade, degree, desc }]
-  const education1 = [...(portfolio?.education || education)].sort((a, b) => {
+  const education1 = [...(portfolio?.education || [])].sort((a, b) => {
     const getYear = (date) =>
       parseInt(date?.match(/\d{4}/g)?.slice(-1)[0]) || 0;
     return getYear(b.date) - getYear(a.date); // latest year pehle

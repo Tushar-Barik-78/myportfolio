@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePortfolio } from "../../hooks/usePortfolio.jsx";
-import { projects } from "../../constants";
-
 import { FiExternalLink, FiGithub, FiX } from "react-icons/fi";
 
 const Works = () => {
@@ -61,7 +59,7 @@ const Works = () => {
     );
   }
 
-  const projects1 = portfolio?.projects || projects;
+  const projects1 = portfolio?.projects || [];
 
   return (
     <section

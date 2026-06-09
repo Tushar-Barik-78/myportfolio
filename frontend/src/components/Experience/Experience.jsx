@@ -1,7 +1,7 @@
 // src/components/Experience/Experience.jsx
 
 import { usePortfolio } from "../../hooks/usePortfolio.jsx";
-import { experiences } from "../../constants";
+// import { experiences } from "../../constants";
 import { FiBriefcase, FiCalendar, FiMail, FiMapPin } from "react-icons/fi";
 
 const Experience = () => {
@@ -42,7 +42,7 @@ const Experience = () => {
     );
   }
 
-  const experiences1 = [...(portfolio?.experience || experiences)].sort(
+  const experiences1 = [...(portfolio?.experience || [])].sort(
     (a, b) => {
       const getYear = (date) =>
         parseInt(date?.match(/\d{4}/g)?.slice(-1)[0]) || 0;
