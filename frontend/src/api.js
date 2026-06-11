@@ -1,7 +1,7 @@
 // src/api.js
 import axios from "axios";
 
-const API = axios.create({ baseURL: import.meta.env.VITE_API_URL || "https://myportfolio-zqex.onrender.com/api" });
+const API = axios.create({ baseURL: "https://myportfolio-zqex.onrender.com/api" ||  import.meta.env.VITE_API_URL});
 
 // Har request mein automatically JWT token attach ho jata hai
 API.interceptors.request.use((req) => {
