@@ -1,5 +1,5 @@
 // src/components/About/About.jsx
-
+import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import Tilt from "react-parallax-tilt";
 import { FiArrowRight } from "react-icons/fi";
@@ -29,30 +29,24 @@ const About = () => {
 
   const hero = portfolio?.hero || {};
 
-  const name =
-    hero.name || "Tushar Barik";
+  const name = hero.name || "Tushar Barik";
 
-  const greeting =
-    hero.greeting || "Hello, I'm";
+  const greeting = hero.greeting || "Hello, I'm";
 
-  const roles =
-    hero.roles || [
-      "Fullstack Developer",
-      "MERN Stack Developer",
-      "UI Designer",
-      "Problem Solver",
-    ];
+  const roles = hero.roles || [
+    "Fullstack Developer",
+    "MERN Stack Developer",
+    "UI Designer",
+    "Problem Solver",
+  ];
 
   const bio =
     hero.bio ||
     `I build modern, scalable and high-performance web applications using the MERN stack and modern technologies. Passionate about creating beautiful user experiences and solving real-world problems through code.`;
 
-  const resumeUrl =
-    hero.resumeUrl ||
-    "https://drive.google.com/";
+  const resumeUrl = hero.resumeUrl || "https://drive.google.com/";
 
-  const profileImg =
-    hero.profileImage || profile3;
+  const profileImg = hero.profileImage || profile3;
 
   const typingSequence = roles.flatMap((role) => [role, 1200]);
 
@@ -65,12 +59,23 @@ const About = () => {
       <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-purple-600/20 blur-[120px] rounded-full"></div>
 
       <div className="absolute bottom-[-120px] right-[-100px] w-[350px] h-[350px] bg-pink-500/20 blur-[120px] rounded-full"></div>
+      <div
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage: ` linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)
+    `,
+          backgroundSize: "40px 40px",
+        }}
+      />
 
-      <div className="relative z-10 flex flex-col-reverse lg:flex-row items-center justify-between gap-8 md:gap-16">
-        
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="relative z-10 flex flex-col-reverse lg:flex-row items-center justify-between gap-8 md:gap-16"
+      >
         {/* LEFT CONTENT */}
         <div className="w-full lg:w-1/2 text-center lg:text-left">
-          
           {/* Small Intro Badge */}
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-sm mb-6 backdrop-blur-xl">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
@@ -83,9 +88,13 @@ const About = () => {
           </h2>
 
           {/* Name */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-5">
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8 }}
+          className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-5">
             {name}
-          </h1>
+          </motion.h1>
 
           {/* Animated Roles */}
           <div className="text-xl sm:text-3xl lg:text-4xl font-bold mb-8">
@@ -97,7 +106,7 @@ const About = () => {
               deletionSpeed={25}
               repeat={Infinity}
               wrapper="span"
-              className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500"
+              className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-white"
             />
           </div>
 
@@ -108,7 +117,6 @@ const About = () => {
 
           {/* Buttons */}
           <div className="flex flex-row items-center gap-5 justify-center lg:justify-start">
-            
             {/* Resume */}
             <a
               href={resumeUrl}
@@ -117,7 +125,6 @@ const About = () => {
               className="group inline-flex text-md items-center gap-3 px-4 md:px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:scale-105 transition-all duration-300"
             >
               Download CV
-
               <FiArrowRight className="group-hover:translate-x-1 transition" />
             </a>
 
@@ -158,7 +165,7 @@ const About = () => {
         </div>
 
         {/* RIGHT IMAGE */}
-        <div className="w-[full] lg:w-1/2 flex justify-center lg:justify-end">
+      <div className="w-[full] lg:w-1/2 flex justify-center lg:justify-end">
           <Tilt
             scale={1.05}
             tiltMaxAngleX={15}
@@ -173,8 +180,7 @@ const About = () => {
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 blur-3xl opacity-30 scale-110"></div>
 
             {/* Main Image Container */}
-            <div className="relative w-[200px] h-[200px] sm:w-[350px] sm:h-[350px] lg:w-[430px] lg:h-[430px] rounded-full p-[5px] bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 shadow-[0_0_80px_rgba(168,85,247,0.35)]">
-              
+            <motion.div className="relative w-[200px] h-[200px] sm:w-[350px] sm:h-[350px] lg:w-[450px] lg:h-[450px] rounded-full p-[6px] bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 shadow-[0_0_100px_rgba(59,130,246,0.35)]">
               <div className="w-full h-full rounded-full overflow-hidden bg-[#120d25] border border-white/10 backdrop-blur-xl">
                 <img
                   src={profileImg}
@@ -182,37 +188,32 @@ const About = () => {
                   className="w-full h-full object-cover hover:scale-105 transition duration-700"
                 />
               </div>
-            </div>
+              <div className="absolute inset-[-15px] rounded-full border border-cyan-400/20 animate-spin [animation-duration:12s]"></div>
+
+              <div className="absolute inset-[-30px] rounded-full border border-blue-500/10 animate-spin [animation-duration:20s] [animation-direction:reverse]"></div>
+            </motion.div>
 
             {/* Floating Cards */}
-            <div className="absolute -left-10 top-10 hidden md:flex items-center gap-3 px-5 py-3 rounded-2xl bg-[#140d2e]/90 border border-purple-500/20 backdrop-blur-xl shadow-xl">
+            <div className="absolute -left-10 top-10 hidden md:flex items-center gap-3 px-5 py-3 rounded-2xl bg-[#08111f] border border-cyan-500/20 backdrop-blur-xl shadow-xl z-10">
               <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
 
               <div>
-                <h4 className="text-white text-sm font-semibold">
-                  1+ Years
-                </h4>
+                <h4 className="text-white text-sm font-semibold">1+ Years</h4>
 
-                <p className="text-gray-400 text-xs">
-                  Experience
-                </p>
+                <p className="text-gray-400 text-xs">Experience</p>
               </div>
             </div>
 
-            <div className="absolute -right-10 bottom-10 hidden md:flex items-center gap-3 px-5 py-3 rounded-2xl bg-[#140d2e]/90 border border-pink-500/20 backdrop-blur-xl shadow-xl">
-              <div>
-                <h4 className="text-white text-sm font-semibold">
-                  MERN Stack
-                </h4>
+            <div className="absolute -right-10 bottom-10 hidden md:flex items-center gap-3 px-5 py-3 rounded-2xl bg-[#08111f] border border-blue-500/20 z-10 backdrop-blur-xl shadow-xl">
+              <div> 
+                <h4 className="text-white text-sm font-semibold">MERN Stack</h4>
 
-                <p className="text-gray-400 text-xs">
-                  Specialist
-                </p>
+                <p className="text-gray-400 text-xs">Specialist</p>
               </div>
             </div>
           </Tilt>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
