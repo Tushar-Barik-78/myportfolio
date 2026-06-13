@@ -391,7 +391,7 @@ const About = () => {
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 blur-3xl opacity-20 scale-110 pointer-events-none"></div>
 
             {/* Neon Frame Radial Container */}
-            <motion.div className="relative w-[240px] h-[240px] sm:w-[350px] sm:h-[350px] lg:w-[430px] lg:h-[430px] rounded-full p-[4px] bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-800 shadow-[0_0_70px_rgba(6,182,212,0.25)]">
+            <motion.div className="relative w-[200px] h-[200px] sm:w-[350px] sm:h-[350px] lg:w-[430px] lg:h-[430px] rounded-full p-[4px] bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-800 shadow-[0_0_70px_rgba(6,182,212,0.25)]">
               <div className="w-full h-full rounded-full overflow-hidden bg-[#0a0f1d] border border-blue-900/40 backdrop-blur-xl">
                 <img
                   src={profileImg}

@@ -500,10 +500,10 @@ duration-300
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          className=" group relative overflow-hidden rounded-[30px] border border-blue-500/20 bg-white/[0.03] backdrop-blur-xl p-6 transition-all duration-500 hover:-translate-y-2 hover:border-blue-400/50 hover:shadow-[0_0_40px_rgba(59,130,246,0.25)] "
+          className=" group relative overflow-hidden rounded-[30px] border border-blue-500/20 bg-white/[0.03] backdrop-blur-xl p-2 md:p-6 transition-all duration-500 hover:-translate-y-2 hover:border-blue-400/50 hover:shadow-[0_0_40px_rgba(59,130,246,0.25)] "
         >
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-          <p className="text-white font-semibold mb-5">GitHub Stats</p>
+          <p className="text-white font-semibold mb-5 pl-4 mt-4">GitHub Stats</p>
 
           {/* GitHub readme stats image */}
           {u.github && (

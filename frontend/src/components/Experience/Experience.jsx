@@ -322,9 +322,9 @@ const Experience = () => {
       </div>
 
       {/* TIMELINE */}
-      <div className="relative z-10">
+      <div className="relative z-100">
         {/* Central Vertical Line */}
-        <div className="absolute sm:left-1/2 left-0 transform -translate-x-1/2 sm:translate-x-0 w-[2px] bg-gradient-to-b from-blue-600 via-cyan-400 to-blue-950 h-full"></div>
+        <div className="absolute md:left-1/2 left-0 transform -translate-x-1/2 sm:translate-x-0 w-[2px] bg-gradient-to-b from-blue-600 via-cyan-400 to-blue-950 h-full"></div>
 
         <div className="space-y-12 sm:space-y-10">
           {experiences1.map((experience, index) => {
@@ -342,7 +342,7 @@ const Experience = () => {
                   whileInView={{ scale: 1, opacity: 1 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-                  className="absolute sm:left-1/2 left-0 transform -translate-x-1/2 bg-[#090d1a] border-4 border-blue-500/80 shadow-[0_0_15px_rgba(59,130,246,0.5)] w-12 h-12 sm:w-16 sm:h-16 rounded-full flex justify-center items-center z-20 overflow-hidden"
+                  className="absolute md:left-1/2 left-0 transform -translate-x-1/2 bg-[#090d1a] border-4 border-blue-500/80 shadow-[0_0_15px_rgba(59,130,246,0.5)] w-12 h-12 sm:w-16 sm:h-16 rounded-full flex justify-center items-center z-20 overflow-hidden"
                 >
                   {experience.companyLogo || experience.img ? (
                     <img
