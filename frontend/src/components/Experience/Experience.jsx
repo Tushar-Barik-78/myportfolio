@@ -322,7 +322,7 @@ const Experience = () => {
       </div>
 
       {/* TIMELINE */}
-      <div className="relative z-100">
+      <div className="relative z-10">
         {/* Central Vertical Line */}
         <div className="absolute md:left-1/2 left-0 transform -translate-x-1/2 sm:translate-x-0 w-[2px] bg-gradient-to-b from-blue-600 via-cyan-400 to-blue-950 h-full"></div>
 
