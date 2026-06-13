@@ -75,16 +75,36 @@ const initialData = {
   ],
   contact: { email: "", phone: "", github: "", linkedin: "", twitter: "" },
   codingStats: {
-    usernames: { leetcode: "", gfg: "", github: "", hackerrank: "", codechef: "" },
+    usernames: {
+      leetcode: "",
+      gfg: "",
+      github: "",
+      hackerrank: "",
+      codechef: "",
+    },
     manual: {
-      leetcode:   { totalSolved: 0, easySolved: 0, mediumSolved: 0, hardSolved: 0, rating: 0, attended: 0 },
-      gfg:        { totalSolved: 0, easy: 0, medium: 0, hard: 0, score: 0, streak: 0, maxStreak: 0 },
-      github:     { publicRepos: 0, totalStars: 0, followers: 0 },
+      leetcode: {
+        totalSolved: 0,
+        easySolved: 0,
+        mediumSolved: 0,
+        hardSolved: 0,
+        rating: 0,
+        attended: 0,
+      },
+      gfg: {
+        totalSolved: 0,
+        easy: 0,
+        medium: 0,
+        hard: 0,
+        score: 0,
+        streak: 0,
+        maxStreak: 0,
+      },
+      github: { publicRepos: 0, totalStars: 0, followers: 0 },
       hackerrank: { stars: 0, badges: 0 },
-      codechef:   { rating: 0, stars: "" },
+      codechef: { rating: 0, stars: "" },
     },
   },
-
 };
 
 const ICON = {
@@ -562,54 +582,383 @@ function HeroSection({ data, onChange }) {
   );
 }
 
+// function SkillsSection({ data, onChange }) {
+//   const [newSkillName, setNewSkillName] = useState({});
+//   const [openSections, setOpenSections] = useState(
+//     data?.reduce((a, c) => {
+//       a[c.id] = true;
+//       return a;
+//     }, {}),
+//   );
+
+//   console.log(data);
+  
+
+
+//   const toggleSection = (id) =>
+//     setOpenSections((p) => ({ ...p, [id]: !p[id] }));
+
+//   // Logo upload for new skill being added
+
+//   const addSkill = (catId) => {
+//     if (!newSkillName[catId]?.trim()) return;
+//     onChange(
+//       data.map((cat) =>
+//         cat.id === catId
+//           ? {
+//               ...cat,
+//               skills: [
+//                 ...cat.skills,
+//                 {
+//                   name: newSkillName[catId].trim(),
+//                 },
+//               ],
+//             }
+//           : cat,
+//       ),
+//     );
+//     setNewSkillName((p) => ({ ...p, [catId]: "" }));
+//   };
+
+//   const removeSkill = (catId, idx) =>
+//     onChange(
+//       data?.map((cat) =>
+//         cat.id === catId
+//           ? { ...cat, skills: cat.skills.filter((_, i) => i !== idx) }
+//           : cat,
+//       ),
+//     );
+
+//   const addCategory = () => {
+//     const id = Date.now();
+//     onChange([...data, { id, title: "New Category", skills: [] }]);
+//     setOpenSections((p) => ({ ...p, [id]: true }));
+//   };
+
+//   const removeCategory = (id) => onChange(data.filter((c) => c.id !== id));
+
+//   const inputCls =
+//     "w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition";
+
+//   return (
+//     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+//       {data?.map((cat) => (
+//         <div
+//           key={cat._id}
+//           style={{
+//             background:
+//               "linear-gradient(145deg,rgba(18,18,35,.95),rgba(10,10,20,.95))",
+//             border: "1px solid rgba(130,69,236,0.15)",
+//             borderRadius: 22,
+//             overflow: "hidden",
+//           }}
+//         >
+//           {/* Category Header */}
+//           <div
+//             onClick={() => toggleSection(cat.id)}
+//             style={{
+//               padding: "18px 20px",
+//               display: "flex",
+//               justifyContent: "space-between",
+//               alignItems: "center",
+//               cursor: "pointer",
+//               flexWrap: "wrap",
+//               gap: 12,
+//               background: openSections[cat.id]
+//                 ? "rgba(130,69,236,0.08)"
+//                 : "transparent",
+//               borderBottom: openSections[cat.id]
+//                 ? "1px solid rgba(255,255,255,0.06)"
+//                 : "none",
+//             }}
+//           >
+//             <div
+//               style={{
+//                 display: "flex",
+//                 alignItems: "center",
+//                 gap: 14,
+//                 flex: 1,
+//                 minWidth: 0,
+//               }}
+//             >
+//               <div
+//                 style={{
+//                   width: 42,
+//                   height: 42,
+//                   borderRadius: "50%",
+//                   background: "linear-gradient(135deg,#8245ec,#a855f7)",
+//                   display: "flex",
+//                   alignItems: "center",
+//                   justifyContent: "center",
+//                   fontSize: 18,
+//                   flexShrink: 0,
+//                 }}
+//               >
+//                 ⚡
+//               </div>
+//               <div style={{ flex: 1, minWidth: 0 }}>
+//                 <input
+//                   style={{
+//                     width: "100%",
+//                     background: "transparent",
+//                     border: "none",
+//                     outline: "none",
+//                     color: "#fff",
+//                     fontSize: 18,
+//                     fontWeight: 600,
+//                   }}
+//                   value={cat.title}
+//                   onClick={(e) => e.stopPropagation()}
+//                   onChange={(e) =>
+//                     onChange(
+//                       data.map((c) =>
+//                         c.id === cat.id ? { ...c, title: e.target.value } : c,
+//                       ),
+//                     )
+//                   }
+//                 />
+//                 <div
+//                   style={{
+//                     fontSize: 12,
+//                     color: "rgba(255,255,255,0.45)",
+//                     marginTop: 2,
+//                   }}
+//                 >
+//                   {cat?.skills?.length} skills
+//                 </div>
+//               </div>
+//             </div>
+//             <div style={{ display: "flex", gap: 10 }}>
+//               <button
+//                 onClick={(e) => {
+//                   e.stopPropagation();
+//                   removeCategory(cat.id);
+//                 }}
+//                 style={{
+//                   background: "rgba(226,75,74,0.1)",
+//                   color: "#ff6b6b",
+//                   border: "1px solid rgba(255,107,107,0.2)",
+//                   borderRadius: 10,
+//                   padding: "8px 12px",
+//                   cursor: "pointer",
+//                   fontSize: 12,
+//                   fontWeight: 600,
+//                 }}
+//               >
+//                 Remove
+//               </button>
+//               <div
+//                 style={{
+//                   width: 34,
+//                   height: 34,
+//                   borderRadius: 10,
+//                   background: "rgba(255,255,255,0.06)",
+//                   display: "flex",
+//                   alignItems: "center",
+//                   justifyContent: "center",
+//                   color: "#fff",
+//                   transition: "0.3s",
+//                   transform: openSections[cat.id]
+//                     ? "rotate(180deg)"
+//                     : "rotate(0deg)",
+//                 }}
+//               >
+//                 ⌄
+//               </div>
+//             </div>
+//           </div>
+
+//           {openSections[cat.id] && (
+//             <div style={{ padding: 20 }}>
+//               {/* Existing Skills */}
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   flexWrap: "wrap",
+//                   gap: 10,
+//                   marginBottom: 20,
+//                 }}
+//               >
+//                 {cat.skills.map((sk, i) => (
+//                   <div
+//                     key={i}
+//                     style={{
+//                       background: "rgba(130,69,236,0.18)",
+//                       border: "1px solid rgba(130,69,236,0.18)",
+//                       borderRadius: 999,
+//                       padding: "8px 14px",
+//                       fontSize: 13,
+//                       color: "#fff",
+//                       display: "flex",
+//                       alignItems: "center",
+//                       gap: 8,
+//                     }}
+//                   >
+//                     {sk.logo ? (
+//                       <img
+//                         src={sk.logo}
+//                         alt={sk.name}
+//                         style={{
+//                           width: 22,
+//                           height: 22,
+//                           objectFit: "contain",
+//                           borderRadius: "50%",
+//                           background: "#fff",
+//                           padding: 2,
+//                         }}
+//                       />
+//                     ) : (
+//                       <span style={{ fontSize: 16 }}>🔧</span>
+//                     )}
+//                     <span>{sk.name}</span>
+//                     <span
+//                       onClick={() => removeSkill(cat.id, i)}
+//                       style={{
+//                         cursor: "pointer",
+//                         color: "#ff7b7b",
+//                         fontWeight: "bold",
+//                       }}
+//                     >
+//                       ✕
+//                     </span>
+//                   </div>
+//                 ))}
+//                 {cat.skills.length === 0 && (
+//                   <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>
+//                     No skills yet — add one below
+//                   </p>
+//                 )}
+//               </div>
+
+//               {/* Add New Skill */}
+//               <div
+//                 style={{
+//                   background: "rgba(130,69,236,0.06)",
+//                   border: "1px solid rgba(130,69,236,0.15)",
+//                   borderRadius: 16,
+//                   padding: 16,
+//                 }}
+//               >
+//                 <p
+//                   style={{
+//                     color: "rgba(255,255,255,0.55)",
+//                     fontSize: 12,
+//                     fontWeight: 600,
+//                     marginBottom: 14,
+//                     letterSpacing: 0.4,
+//                   }}
+//                 >
+//                   ADD NEW SKILL
+//                 </p>
+
+//                 {/* Skill Name */}
+//                 <div style={{ marginBottom: 14 }}>
+//                   <label
+//                     style={{
+//                       fontSize: 12,
+//                       color: "rgba(255,255,255,0.5)",
+//                       marginBottom: 6,
+//                       display: "block",
+//                     }}
+//                   >
+//                     Skill Name
+//                   </label>
+//                   <input
+//                     className={inputCls}
+//                     placeholder="e.g. React JS"
+//                     value={newSkillName[cat.id] || ""}
+//                     onChange={(e) =>
+//                       setNewSkillName((p) => ({
+//                         ...p,
+//                         [cat.id]: e.target.value,
+//                       }))
+//                     }
+//                     onKeyDown={(e) => e.key === "Enter" && addSkill(cat.id)}
+//                   />
+//                 </div>
+
+              
+
+//                 {/* Add Button */}
+//                 <button
+//                   onClick={() => addSkill(cat.id)}
+//                   disabled={
+//                     !newSkillName[cat.id]?.trim()
+//                   }
+//                   style={{
+//                     background: "linear-gradient(135deg,#8245ec,#6366f1)",
+//                     color: "#fff",
+//                     border: "none",
+//                     borderRadius: 14,
+//                     padding: "12px 24px",
+//                     cursor: "pointer",
+//                     fontWeight: 600,
+//                     fontSize: 14,
+//                     opacity:
+//                       !newSkillName[cat.id]?.trim() 
+//                         ? 0.5
+//                         : 1,
+//                   }}
+//                 >
+//                   + Add Skill
+//                 </button>
+//               </div>
+//             </div>
+//           )}
+//         </div>
+//       ))}
+
+//       <button
+//         onClick={addCategory}
+//         style={{
+//           width: "100%",
+//           border: "1px dashed rgba(130,69,236,0.35)",
+//           background: "rgba(130,69,236,0.05)",
+//           color: "#b892ff",
+//           padding: "18px",
+//           borderRadius: 20,
+//           cursor: "pointer",
+//           fontSize: 15,
+//           fontWeight: 600,
+//         }}
+//       >
+//         ✨ Add Skill Category
+//       </button>
+//     </div>
+//   );
+// }
+
+
+// import React, { useState } from 'react';
+
 function SkillsSection({ data, onChange }) {
   const [newSkillName, setNewSkillName] = useState({});
-  const [newSkillLogo, setNewSkillLogo] = useState({}); // { catId: "cloudinary_url" }
-  // const [logoUploading, setLogoUploading] = useState({}); // { catId: true/false }
   const [openSections, setOpenSections] = useState(
+    // 1. Yahan c.id ki jagah c._id kiya taaki initial state sahi bane
     data?.reduce((a, c) => {
-      a[c.id] = true;
+      a[c._id] = false;
       return a;
     }, {}),
   );
 
-  const logoInputRefs = useRef({}); // ek ref per category
+  console.log(data);
 
+  // 2. toggleSection me id ab hamesha _id hogi
   const toggleSection = (id) =>
     setOpenSections((p) => ({ ...p, [id]: !p[id] }));
-
-  // Logo upload for new skill being added
-  const handleLogoFile = async (catId, file) => {
-    if (!file) return;
-    // Instant local preview
-    const reader = new FileReader();
-    reader.onloadend = () =>
-      setNewSkillLogo((p) => ({ ...p, [catId]: reader.result }));
-    reader.readAsDataURL(file);
-    // Upload to Cloudinary
-    setLogoUploading((p) => ({ ...p, [catId]: true }));
-    try {
-      const res = await uploadImage(file);
-      setNewSkillLogo((p) => ({ ...p, [catId]: res.data.url }));
-    } catch (err) {
-      console.error("Logo upload failed:", err);
-    } finally {
-      setLogoUploading((p) => ({ ...p, [catId]: false }));
-    }
-  };
 
   const addSkill = (catId) => {
     if (!newSkillName[catId]?.trim()) return;
     onChange(
       data.map((cat) =>
-        cat.id === catId
+        // 3. cat.id ki jagah cat._id
+        cat._id === catId
           ? {
               ...cat,
               skills: [
                 ...cat.skills,
                 {
                   name: newSkillName[catId].trim(),
-                  logo: newSkillLogo[catId] || "",
                 },
               ],
             }
@@ -617,25 +966,26 @@ function SkillsSection({ data, onChange }) {
       ),
     );
     setNewSkillName((p) => ({ ...p, [catId]: "" }));
-    setNewSkillLogo((p) => ({ ...p, [catId]: "" }));
   };
 
   const removeSkill = (catId, idx) =>
     onChange(
       data?.map((cat) =>
-        cat.id === catId
+        // 4. cat.id ki jagah cat._id
+        cat._id === catId
           ? { ...cat, skills: cat.skills.filter((_, i) => i !== idx) }
           : cat,
       ),
     );
 
   const addCategory = () => {
-    const id = Date.now();
-    onChange([...data, { id, title: "New Category", skills: [] }]);
-    setOpenSections((p) => ({ ...p, [id]: true }));
+    // 5. Naye category ke liye hum _id standard maintain kar rahe hain
+    const _id = Date.now().toString(); 
+    onChange([...data, { _id, title: "New Category", skills: [] }]);
+    setOpenSections((p) => ({ ...p, [_id]: true }));
   };
 
-  const removeCategory = (id) => onChange(data.filter((c) => c.id !== id));
+  const removeCategory = (id) => onChange(data.filter((c) => c._id !== id)); // 6. c.id -> c._id
 
   const inputCls =
     "w-full rounded-2xl border border-white/10 bg-[#140d2e] px-4 py-3 text-white outline-none focus:border-purple-500 transition";
@@ -644,7 +994,7 @@ function SkillsSection({ data, onChange }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       {data?.map((cat) => (
         <div
-          key={cat.id}
+          key={cat._id} // Yeh pehle se sahi tha
           style={{
             background:
               "linear-gradient(145deg,rgba(18,18,35,.95),rgba(10,10,20,.95))",
@@ -655,7 +1005,7 @@ function SkillsSection({ data, onChange }) {
         >
           {/* Category Header */}
           <div
-            onClick={() => toggleSection(cat.id)}
+            onClick={() => toggleSection(cat._id)} // 7. cat.id -> cat._id
             style={{
               padding: "18px 20px",
               display: "flex",
@@ -664,10 +1014,10 @@ function SkillsSection({ data, onChange }) {
               cursor: "pointer",
               flexWrap: "wrap",
               gap: 12,
-              background: openSections[cat.id]
+              background: openSections[cat._id] // 8. cat.id -> cat._id
                 ? "rgba(130,69,236,0.08)"
                 : "transparent",
-              borderBottom: openSections[cat.id]
+              borderBottom: openSections[cat._id] // 9. cat.id -> cat._id
                 ? "1px solid rgba(255,255,255,0.06)"
                 : "none",
             }}
@@ -712,7 +1062,8 @@ function SkillsSection({ data, onChange }) {
                   onChange={(e) =>
                     onChange(
                       data.map((c) =>
-                        c.id === cat.id ? { ...c, title: e.target.value } : c,
+                        // 10. c.id -> c._id aur cat.id -> cat._id
+                        c._id === cat._id ? { ...c, title: e.target.value } : c,
                       ),
                     )
                   }
@@ -732,7 +1083,7 @@ function SkillsSection({ data, onChange }) {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  removeCategory(cat.id);
+                  removeCategory(cat._id); // 11. cat.id -> cat._id
                 }}
                 style={{
                   background: "rgba(226,75,74,0.1)",
@@ -758,7 +1109,7 @@ function SkillsSection({ data, onChange }) {
                   justifyContent: "center",
                   color: "#fff",
                   transition: "0.3s",
-                  transform: openSections[cat.id]
+                  transform: openSections[cat._id] // 12. cat.id -> cat._id
                     ? "rotate(180deg)"
                     : "rotate(0deg)",
                 }}
@@ -768,7 +1119,7 @@ function SkillsSection({ data, onChange }) {
             </div>
           </div>
 
-          {openSections[cat.id] && (
+          {openSections[cat._id] && ( // 13. cat.id -> cat._id
             <div style={{ padding: 20 }}>
               {/* Existing Skills */}
               <div
@@ -812,7 +1163,7 @@ function SkillsSection({ data, onChange }) {
                     )}
                     <span>{sk.name}</span>
                     <span
-                      onClick={() => removeSkill(cat.id, i)}
+                      onClick={() => removeSkill(cat._id, i)} // 14. cat.id -> cat._id
                       style={{
                         cursor: "pointer",
                         color: "#ff7b7b",
@@ -866,174 +1217,22 @@ function SkillsSection({ data, onChange }) {
                   <input
                     className={inputCls}
                     placeholder="e.g. React JS"
-                    value={newSkillName[cat.id] || ""}
+                    value={newSkillName[cat._id] || ""} // 15. cat.id -> cat._id
                     onChange={(e) =>
                       setNewSkillName((p) => ({
                         ...p,
-                        [cat.id]: e.target.value,
+                        [cat._id]: e.target.value, // 16. cat.id -> cat._id
                       }))
                     }
-                    onKeyDown={(e) => e.key === "Enter" && addSkill(cat.id)}
+                    onKeyDown={(e) => e.key === "Enter" && addSkill(cat._id)} // 17. cat.id -> cat._id
                   />
-                </div>
-
-                {/* Skill Logo Upload */}
-                <div style={{ marginBottom: 16 }}>
-                  <label
-                    style={{
-                      fontSize: 12,
-                      color: "rgba(255,255,255,0.5)",
-                      marginBottom: 8,
-                      display: "block",
-                    }}
-                  >
-                    Skill Logo{" "}
-                    <span style={{ color: "rgba(255,255,255,0.3)" }}>
-                      (optional)
-                    </span>
-                  </label>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 14,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    {/* Preview */}
-                    {newSkillLogo[cat.id] ? (
-                      <div style={{ position: "relative" }}>
-                        <img
-                          src={newSkillLogo[cat.id]}
-                          alt="logo preview"
-                          style={{
-                            width: 52,
-                            height: 52,
-                            objectFit: "contain",
-                            borderRadius: 10,
-                            background: "#fff",
-                            padding: 4,
-                            border: "2px solid rgba(130,69,236,0.4)",
-                          }}
-                        />
-                        {logoUploading[cat.id] && (
-                          <div
-                            style={{
-                              position: "absolute",
-                              inset: 0,
-                              borderRadius: 10,
-                              background: "rgba(0,0,0,0.6)",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <div
-                              style={{
-                                width: 18,
-                                height: 18,
-                                border: "2px solid #a78bfa",
-                                borderTopColor: "transparent",
-                                borderRadius: "50%",
-                                animation: "spin 0.8s linear infinite",
-                              }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div
-                        style={{
-                          width: 52,
-                          height: 52,
-                          borderRadius: 10,
-                          background: "rgba(130,69,236,0.1)",
-                          border: "2px dashed rgba(130,69,236,0.3)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 22,
-                        }}
-                      >
-                        🖼️
-                      </div>
-                    )}
-
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 6,
-                      }}
-                    >
-                      <button
-                        onClick={() => logoInputRefs.current[cat.id]?.click()}
-                        style={{
-                          background: "linear-gradient(135deg,#8245ec,#6366f1)",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: 10,
-                          padding: "8px 16px",
-                          cursor: "pointer",
-                          fontSize: 13,
-                          fontWeight: 600,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 7,
-                        }}
-                      >
-                        📁 Choose Logo
-                      </button>
-                      {logoUploading[cat.id] && (
-                        <span style={{ fontSize: 11, color: "#a78bfa" }}>
-                          Uploading...
-                        </span>
-                      )}
-                      {newSkillLogo[cat.id] && !logoUploading[cat.id] && (
-                        <button
-                          onClick={() =>
-                            setNewSkillLogo((p) => ({ ...p, [cat.id]: "" }))
-                          }
-                          style={{
-                            background: "rgba(255,77,79,0.1)",
-                            color: "#ff6b6b",
-                            border: "1px solid rgba(255,107,107,0.2)",
-                            borderRadius: 8,
-                            padding: "5px 10px",
-                            cursor: "pointer",
-                            fontSize: 11,
-                          }}
-                        >
-                          ✕ Remove
-                        </button>
-                      )}
-                    </div>
-                    <input
-                      ref={(el) => (logoInputRefs.current[cat.id] = el)}
-                      type="file"
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      onChange={(e) =>
-                        handleLogoFile(cat.id, e.target.files?.[0])
-                      }
-                    />
-                  </div>
-                  <p
-                    style={{
-                      fontSize: 11,
-                      color: "rgba(255,255,255,0.3)",
-                      marginTop: 8,
-                    }}
-                  >
-                    PNG/SVG recommended — uploaded to Cloudinary
-                  </p>
                 </div>
 
                 {/* Add Button */}
                 <button
-                  onClick={() => addSkill(cat.id)}
+                  onClick={() => addSkill(cat._id)} // 18. cat.id -> cat._id
                   disabled={
-                    !newSkillName[cat.id]?.trim() || logoUploading[cat.id]
+                    !newSkillName[cat._id]?.trim() // 19. cat.id -> cat._id
                   }
                   style={{
                     background: "linear-gradient(135deg,#8245ec,#6366f1)",
@@ -1045,7 +1244,7 @@ function SkillsSection({ data, onChange }) {
                     fontWeight: 600,
                     fontSize: 14,
                     opacity:
-                      !newSkillName[cat.id]?.trim() || logoUploading[cat.id]
+                      !newSkillName[cat._id]?.trim() // 20. cat.id -> cat._id
                         ? 0.5
                         : 1,
                   }}
@@ -1077,6 +1276,8 @@ function SkillsSection({ data, onChange }) {
     </div>
   );
 }
+
+// export default SkillsSection;
 
 // ─── Experience Section ───────────────────────────────────────────────────
 function ExperienceSection({ data, onChange }) {
@@ -1905,7 +2106,7 @@ export default function PortfolioAdmin({ initialData: dbData }) {
   const [active, setActive] = useState("Hero");
   const [data, setData] = useState(dbData || initialData);
   const [toast, setToast] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // for mobile sidebar
   const [saving, setSaving] = useState(false);
   const sideBarRef = useRef(null);
 
@@ -1974,8 +2175,8 @@ export default function PortfolioAdmin({ initialData: dbData }) {
       <div className="relative z-10 flex">
         {/* Sidebar */}
         <aside
-            ref={sideBarRef}
-          className={`fixed lg:static top-0 left-0 h-screen w-[240px] bg-white/5 backdrop-blur-2xl border-r border-white/10 z-60 p-5 flex flex-col transition-transform duration-300 ${
+          ref={sideBarRef}
+          className={`fixed lg:fixed top-0 left-0 h-screen w-[240px] bg-white/5 backdrop-blur-2xl border-r border-white/10 z-60 p-5 flex flex-col transition-transform duration-300 ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
           }`}
         >
@@ -2005,7 +2206,6 @@ export default function PortfolioAdmin({ initialData: dbData }) {
               onClick={() => window.open("/", "_target")}
               className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 px-4 py-3 text-sm font-semibold text-purple-300 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:from-purple-500/20 hover:to-pink-500/20 hover:text-white"
             >
-             
               <span className="relative z-10 text-base transition-transform duration-300 group-hover:scale-110">
                 👁
               </span>
@@ -2026,14 +2226,13 @@ export default function PortfolioAdmin({ initialData: dbData }) {
         </aside>
 
         {/* Main */}
-        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8">
+        <main className="lg:ml-60 flex-1 min-w-0 p-4 sm:p-6 lg:p-8">
           {/* Mobile topbar */}
           <div className="flex items-center justify-between lg:hidden mb-5">
             <button
-              onClick={() =>{
-                
-                 setSidebarOpen(true)
-                }}
+              onClick={() => {
+                setSidebarOpen(true);
+              }}
               className="bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-lg"
             >
               ☰
@@ -2132,127 +2331,240 @@ export default function PortfolioAdmin({ initialData: dbData }) {
               />
             )}
             {active === "Stats" && (
-  <div className="space-y-8">
-    {/* Usernames */}
-    <div>
-      <h3 className="text-white font-semibold mb-4">Platform Usernames</h3>
-      <p className="text-xs text-gray-500 mb-4">These are used to auto-fetch live stats from APIs.</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {["leetcode","gfg","github","hackerrank","codechef"].map((platform) => (
-          <div key={platform}>
-            <label className="block text-xs text-gray-400 mb-1 capitalize">{platform} username</label>
-            <input
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-purple-500/50"
-              value={data.codingStats?.usernames?.[platform] || ""}
-              onChange={(e) => setData((prev) => ({
-                ...prev,
-                codingStats: { ...prev.codingStats, usernames: { ...prev.codingStats?.usernames, [platform]: e.target.value } }
-              }))}
-              placeholder={`your ${platform} username`}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
+              <div className="space-y-8">
+                {/* Usernames */}
+                <div>
+                  <h3 className="text-white font-semibold mb-4">
+                    Platform Usernames
+                  </h3>
+                  <p className="text-xs text-gray-500 mb-4">
+                    These are used to auto-fetch live stats from APIs.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {[
+                      "leetcode",
+                      "gfg",
+                      "github",
+                      "hackerrank",
+                      "codechef",
+                    ].map((platform) => (
+                      <div key={platform}>
+                        <label className="block text-xs text-gray-400 mb-1 capitalize">
+                          {platform} username
+                        </label>
+                        <input
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-purple-500/50"
+                          value={data.codingStats?.usernames?.[platform] || ""}
+                          onChange={(e) =>
+                            setData((prev) => ({
+                              ...prev,
+                              codingStats: {
+                                ...prev.codingStats,
+                                usernames: {
+                                  ...prev.codingStats?.usernames,
+                                  [platform]: e.target.value,
+                                },
+                              },
+                            }))
+                          }
+                          placeholder={`your ${platform} username`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-    {/* Manual Overrides */}
-    <div>
-      <h3 className="text-white font-semibold mb-1">Manual Overrides</h3>
-      <p className="text-xs text-gray-500 mb-4">Used as fallback if live API fails.</p>
+                {/* Manual Overrides */}
+                <div>
+                  <h3 className="text-white font-semibold mb-1">
+                    Manual Overrides
+                  </h3>
+                  <p className="text-xs text-gray-500 mb-4">
+                    Used as fallback if live API fails.
+                  </p>
 
-      {/* LeetCode */}
-      <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">LeetCode</p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
-        {[["totalSolved","Total"],["easySolved","Easy"],["mediumSolved","Medium"],["hardSolved","Hard"],["rating","Rating"],["attended","Contests"]].map(([key,label]) => (
-          <div key={key}>
-            <label className="block text-[10px] text-gray-500 mb-1">{label}</label>
-            <input type="number"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
-              value={data.codingStats?.manual?.leetcode?.[key] || ""}
-              onChange={(e) => setData((prev) => ({
-                ...prev,
-                codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
-                  leetcode: { ...prev.codingStats?.manual?.leetcode, [key]: Number(e.target.value) }
-                }}
-              }))}
-            />
-          </div>
-        ))}
-      </div>
+                  {/* LeetCode */}
+                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">
+                    LeetCode
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+                    {[
+                      ["totalSolved", "Total"],
+                      ["easySolved", "Easy"],
+                      ["mediumSolved", "Medium"],
+                      ["hardSolved", "Hard"],
+                      ["rating", "Rating"],
+                      ["attended", "Contests"],
+                    ].map(([key, label]) => (
+                      <div key={key}>
+                        <label className="block text-[10px] text-gray-500 mb-1">
+                          {label}
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+                          value={
+                            data.codingStats?.manual?.leetcode?.[key] || ""
+                          }
+                          onChange={(e) =>
+                            setData((prev) => ({
+                              ...prev,
+                              codingStats: {
+                                ...prev.codingStats,
+                                manual: {
+                                  ...prev.codingStats?.manual,
+                                  leetcode: {
+                                    ...prev.codingStats?.manual?.leetcode,
+                                    [key]: Number(e.target.value),
+                                  },
+                                },
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
 
-      {/* GFG */}
-      <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">GeeksForGeeks</p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
-        {[["totalSolved","Total"],["easy","Easy"],["medium","Medium"],["hard","Hard"],["score","Score"],["streak","Streak"],["maxStreak","Max Streak"]].map(([key,label]) => (
-          <div key={key}>
-            <label className="block text-[10px] text-gray-500 mb-1">{label}</label>
-            <input type="number"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
-              value={data.codingStats?.manual?.gfg?.[key] || ""}
-              onChange={(e) => setData((prev) => ({
-                ...prev,
-                codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
-                  gfg: { ...prev.codingStats?.manual?.gfg, [key]: Number(e.target.value) }
-                }}
-              }))}
-            />
-          </div>
-        ))}
-      </div>
+                  {/* GFG */}
+                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">
+                    GeeksForGeeks
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+                    {[
+                      ["totalSolved", "Total"],
+                      ["easy", "Easy"],
+                      ["medium", "Medium"],
+                      ["hard", "Hard"],
+                      ["score", "Score"],
+                      ["streak", "Streak"],
+                      ["maxStreak", "Max Streak"],
+                    ].map(([key, label]) => (
+                      <div key={key}>
+                        <label className="block text-[10px] text-gray-500 mb-1">
+                          {label}
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+                          value={data.codingStats?.manual?.gfg?.[key] || ""}
+                          onChange={(e) =>
+                            setData((prev) => ({
+                              ...prev,
+                              codingStats: {
+                                ...prev.codingStats,
+                                manual: {
+                                  ...prev.codingStats?.manual,
+                                  gfg: {
+                                    ...prev.codingStats?.manual?.gfg,
+                                    [key]: Number(e.target.value),
+                                  },
+                                },
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
 
-      {/* HackerRank */}
-      <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">HackerRank</p>
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        {[["stars","Stars"],["badges","Badges"]].map(([key,label]) => (
-          <div key={key}>
-            <label className="block text-[10px] text-gray-500 mb-1">{label}</label>
-            <input type="number"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
-              value={data.codingStats?.manual?.hackerrank?.[key] || ""}
-              onChange={(e) => setData((prev) => ({
-                ...prev,
-                codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
-                  hackerrank: { ...prev.codingStats?.manual?.hackerrank, [key]: Number(e.target.value) }
-                }}
-              }))}
-            />
-          </div>
-        ))}
-      </div>
+                  {/* HackerRank */}
+                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">
+                    HackerRank
+                  </p>
+                  <div className="grid grid-cols-2 gap-3 mb-5">
+                    {[
+                      ["stars", "Stars"],
+                      ["badges", "Badges"],
+                    ].map(([key, label]) => (
+                      <div key={key}>
+                        <label className="block text-[10px] text-gray-500 mb-1">
+                          {label}
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+                          value={
+                            data.codingStats?.manual?.hackerrank?.[key] || ""
+                          }
+                          onChange={(e) =>
+                            setData((prev) => ({
+                              ...prev,
+                              codingStats: {
+                                ...prev.codingStats,
+                                manual: {
+                                  ...prev.codingStats?.manual,
+                                  hackerrank: {
+                                    ...prev.codingStats?.manual?.hackerrank,
+                                    [key]: Number(e.target.value),
+                                  },
+                                },
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
 
-      {/* CodeChef */}
-      <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">CodeChef</p>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[10px] text-gray-500 mb-1">Rating</label>
-          <input type="number"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
-            value={data.codingStats?.manual?.codechef?.rating || ""}
-            onChange={(e) => setData((prev) => ({
-              ...prev,
-              codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
-                codechef: { ...prev.codingStats?.manual?.codechef, rating: Number(e.target.value) }
-              }}
-            }))}
-          />
-        </div>
-        <div>
-          <label className="block text-[10px] text-gray-500 mb-1">Stars (e.g. ★★★)</label>
-          <input
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
-            value={data.codingStats?.manual?.codechef?.stars || ""}
-            onChange={(e) => setData((prev) => ({
-              ...prev,
-              codingStats: { ...prev.codingStats, manual: { ...prev.codingStats?.manual,
-                codechef: { ...prev.codingStats?.manual?.codechef, stars: e.target.value }
-              }}
-            }))}
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+                  {/* CodeChef */}
+                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">
+                    CodeChef
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-1">
+                        Rating
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+                        value={data.codingStats?.manual?.codechef?.rating || ""}
+                        onChange={(e) =>
+                          setData((prev) => ({
+                            ...prev,
+                            codingStats: {
+                              ...prev.codingStats,
+                              manual: {
+                                ...prev.codingStats?.manual,
+                                codechef: {
+                                  ...prev.codingStats?.manual?.codechef,
+                                  rating: Number(e.target.value),
+                                },
+                              },
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-1">
+                        Stars (e.g. ★★★)
+                      </label>
+                      <input
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500/50"
+                        value={data.codingStats?.manual?.codechef?.stars || ""}
+                        onChange={(e) =>
+                          setData((prev) => ({
+                            ...prev,
+                            codingStats: {
+                              ...prev.codingStats,
+                              manual: {
+                                ...prev.codingStats?.manual,
+                                codechef: {
+                                  ...prev.codingStats?.manual?.codechef,
+                                  stars: e.target.value,
+                                },
+                              },
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="mt-8 pt-6 border-t border-white/10 flex justify-end">
               <button
